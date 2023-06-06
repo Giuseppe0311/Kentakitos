@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bootstrap demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+        <!-- Enlaces a los archivos CSS y JS de Flatpickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  </head>
+  <body>
+    <main>
+      <nav class="navbar bg-light" aria-label="Light offcanvas navbar">
+        <div class="container-fluid">
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasNavbarLight"
+            aria-controls="offcanvasNavbarLight"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand" href="#">AdminPanel Kentakitos</a>
+
+          <div
+            class="offcanvas offcanvas-start"
+            tabindex="-1"
+            id="offcanvasNavbarLight"
+            aria-labelledby="offcanvasNavbarLightLabel"
+          >
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="offcanvasNavbarLightLabel">
+                Kentakitos
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="offcanvas-body">
+              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <li class="nav-item dropdown">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    USUARIOS
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" href="/user/admin/register">Registrar Usuarios</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/user/admin/permission">Asignar Permisos</a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    PRODUCTOS
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" href="/productos">Registrar Productos</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/categorias">Registrar Categorias</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/proveedores"
+                        >Registrar Proveedores</a
+                      >
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/marcas"
+                        >Registrar Marcas</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    COMPRAS
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" href="/compras"> Registar Compras</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/detallecompras"> Mis Compras</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/allpagos"> Mis Pagos</a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a
+                      class="nav-link dropdown-toggle"
+                      href="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      VENTAS
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <a class="dropdown-item" href="/menues"> Registar Menu</a>
+                      </li>
+                    </ul>
+                  </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <!-- aqui empieza el contenido -->
+      <div class="container">
+        <div class="bg-light p-2">
+          <div class="col-sm-12 py-5">
+            <h1 class="display-5 fw-normal text-center">Mis Compras</h1>
+            <hr />
+            <div>
+                <table class="table caption-top table-light table-striped" id="mitabla">
+                  <div class="position-static">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>Fecha de Compra</th>
+                        <th>Total Compra</th>
+                        <th>Proveedor</th>
+                        <th>Tipo de Documento</th>
+                        <th>Numero de Documento</th>
+                        <th>Tipo de Pago</th>
+                        <th>Imagen de Comprobante</th>
+                        <th>Estado de Pago</th>
+                        <th>Opciones</th>
+                      </tr>
+                    </thead>
+                  </div>
+                  <tbody>
+                    <% function formatoFecha(fecha) { %>
+                      <% const options = { day: '2-digit', month: '2-digit', year: '2-digit' }; %>
+                      <% const date = new Date(fecha); %>
+                      <% return date.toLocaleDateString('es-PE', options); %>
+                    <% } %>
+                    <!-- //make a ejs for each -->
+                    <% detalle.forEach(function(elemento) { %>
+                        <tr>
+                          <td><%= formatoFecha(elemento.fecha_compra) %></td>
+                          <td><%=elemento.totalcompra%></td>
+                          <td><%=elemento.proveedor%></td>
+                          <td><%=elemento.tipodocumento%></td>
+                          <td><%=elemento.numerodocumento%></td>
+                          <td><%=elemento.tipo_pago%></td>
+                          <td>
+                            <img src="/assets/uploads/<%= elemento.img %>" alt="" width="100px" onclick="abrirModal('/assets/uploads/<%= elemento.img %>')" title="Haz clic para ampliar" style="cursor: pointer;">
+                          </td>
+                          <td><%=elemento.estadopago%></td>
+                          
+                          <td>
+                            <% if (elemento.tipo_pago==='Credito' && elemento.estadopago === 'Deuda') { %>
+                              <div class="container d-flex gap-2 justify-content-center">        
+                                <a onclick="editar(<%= elemento.idcompra %>)" class="btn btn-outline-info">editar</a>
+                                <a onclick="detalles(<%= elemento.idcompra %>)" class="btn btn-outline-info">Detalles</a>              
+                                <a onclick="pagar(<%= elemento.idcompra %>)" class="btn btn-outline-info">Pagar</a>              
+                                <a onclick="eliminar(<%= elemento.idcompra %>)" class="btn btn-outline-danger">borrar</a>
+                              </div>
+                            <% } else if (elemento.tipo_pago==='Credito' && elemento.estadopago === 'Pagado') { %>
+                              <div class="container d-flex gap-2 justify-content-center" style="white-space: nowrap;">        
+                                <a onclick="editar(<%= elemento.idcompra %>)" class="btn btn-outline-info">editar</a>
+                                <a onclick="detallepago(<%= elemento.idcompra %>)"  class="btn btn-outline-info">Ver pago</a>              
+                                <a onclick="detalles(<%= elemento.idcompra %>)" class="btn btn-outline-info">Detalles</a>              
+                                <a onclick="eliminar(<%= elemento.idcompra %>)" class="btn btn-outline-danger">borrar</a>
+                              </div>
+                            <%} else { %>
+                              <div class="container d-flex gap-2 justify-content-center">        
+                                <a onclick="editar(<%= elemento.idcompra %>)" class="btn btn-outline-info">editar</a>
+                                <a onclick="detalles(<%= elemento.idcompra %>)" class="btn btn-outline-info">Detalles</a>              
+                                <a onclick="eliminar(<%= elemento.idcompra %>)" class="btn btn-outline-danger">borrar</a>
+                              </div>
+                            <% } %>
+                            
+                            </td>
+                        </tr>
+                        <% }); %>
+                  
+                  </tbody>
+                </table>
+                <!-- MODEL DE IMAGEN -->
+                <div id="miModal" class="modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto;">
+                  <span onclick="cerrarModal()" class="modal-cerrar" style="color: black; float: right; font-size: 32px; font-weight: bold; cursor: pointer; margin-right: 20px; margin-top: 20px;">&times;</span>
+                  <img id="imagenModal" src="" alt="" style="max-width: 100%; max-height: 600px; margin: 0 auto; display: block; margin-top: 40px;">
+                </div>
+                <div id="modalFondo" class="modal-fondo" style="display: none; position: fixed; z-index: 9998; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);"></div>
+                
+                <!-- MODAL DE DETALLE COMPRAS -->
+                <div id="detalleCompras" class="modal modal-lg" style="display: none;">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Detalles de la compra</h5>
+                        <button type="button" class="btn-close" onclick="cerrarModal1()"></button>
+                      </div>
+                      <div class="modal-body">
+                        <!-- Aquí puedes agregar tus tablas y formularios -->
+                        <div class="table-responsive">
+                          <table class="table caption-top table-light table-striped" id="mitabla1">
+                            <!-- Contenido de la tabla -->
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody id="detalleComprasBody">
+                              
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="fondomodal" class="fondo-modal" style="display: none;"></div>
+                <!-- MODAL DE PAGOS -->
+                <div id="detallepago" class="modal modal-lg" style="display: none;">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Pagos</h5>
+                        <button type="button" class="btn-close" onclick="cerrarModal2()"></button>
+                      </div>
+                      <div class="modal-body">
+                        <!-- Aquí puedes agregar tus tablas y formularios -->
+                        <div class="table-responsive">
+                          <table class="table caption-top table-light table-striped" id="mitabla2">
+                            <!-- Contenido de la tabla -->
+                            <thead class="table-dark">
+                              <tr>
+                                <th>Fecha Pago</th>
+                                <th>Comprobante Autorizado</th>
+                                <th>Opciones</th>
+                              </tr>
+                            </thead>
+                            <tbody id="detallePagoBody">
+                              
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="fondomodalpago" class="fondo-modal" style="display: none;"></div>
+                
+              </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+      crossorigin="anonymous"
+    >
+  </script>
+  <script>
+    function abrirModal(rutaImagen) {
+      const modal = document.getElementById("miModal");
+      const imagenModal = document.getElementById("imagenModal");
+    
+      imagenModal.src = rutaImagen;
+      modal.style.display = "block";
+      document.getElementById("modalFondo").style.display = "block";
+    }
+    
+    function cerrarModal() {
+      const modal = document.getElementById("miModal");
+      const imagenModal = document.getElementById("imagenModal");
+    
+      imagenModal.src = "";
+      modal.style.display = "none";
+      document.getElementById("modalFondo").style.display = "none";
+    }
+    </script>
+    <script>
+      async function pagar(id) {
+        Swal.fire({
+      title: 'Registrar Pago',
+         showCancelButton: false, // Ocultar el botón de cancelar de SweetAlert
+        showConfirmButton: false ,// Ocultar el botón de confirmar de SweetAlert
+      html: `
+      <form id="agregarPago" method="post" action="/pagos enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="fecha">Fecha de Pago</label>
+    <input type="text" class="form-control" name="fecha" id="fecha" required readonly>
+  </div>
+  <div class="input-group mb-3 mt-3">
+    <small class="mb-2" style="font-size: 15px; color: red;">*Recuerda que solo se aceptan imagenes de tipo <strong>jpg,png,jpeg</strong>.</small>
+  <label class="input-group-text" for="image">Boleta Autorizada</label>
+  <input type="file" class="form-control" id="image" name="image" required>
+</div>
+
+<br/>
+<button type="submit" class="submit" style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" id="registrarBoton">Registrar</button>
+<a href="#" class="cancel" style="background-color: #d33; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer; margin-left: 10px;" id="cancelarBoton">Cancelar</a>
+
+  </form>`,
+      });
+      flatpickr("#fecha", {
+  dateFormat: "d/m/Y",  // Formato de la fecha
+  locale: {
+    firstDayOfWeek: 1,  // Establece el primer día de la semana (Lunes)
+    weekdays: {
+      shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+      longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    },
+    months: {
+      shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+      longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    }
+  }
+});
+      document.getElementById('agregarPago').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Evitar que el formulario se envíe de inmediato
+       const formData = new FormData(event.target);
+    try {
+        // Enviar el     formulario manualmente
+        const response = await axios.post(`/pagos/${id}`,formData);
+        console.log(response)
+        Swal.fire('Registrado!', '', 'success');
+        setTimeout(function () {
+            location.reload();
+        }, 1000);
+    } catch (error) {
+        Swal.fire('Error', 'Ha ocurrido un error al enviar el formulario', 'error');
+    }
+});
+
+    document.getElementById('cancelarBoton').addEventListener('click', () => {
+        console.log('eres gei');
+        Swal.close();
+    });
+} 
+  </script>
+    <script>
+      document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+          cerrarModal();
+        }
+      });
+    </script>
+  <script>
+    async function  editar(id) {
+        try {
+            response = await axios.get(`/compras/${id}`)
+            response2 = await axios.get(`/compras4prove`)
+            const proveedores = response2.data
+            const datoscompras = response.data[0];
+            console.log(proveedores)
+            console.log(datoscompras)
+            let proveedoresOptions = '';
+            let tipodocumentoOptions = '';
+            let tipoPagoOptions='';
+ 
+    if (datoscompras.tipodocumento==='Boleta') {
+      tipodocumentoOptions += `<option value="Boleta" selected>Boleta</option>`;
+      tipodocumentoOptions += `<option value="Factura">Factura</option>`;
+    }else{
+      tipodocumentoOptions += `<option value="Boleta">Boleta</option>`;
+      tipodocumentoOptions += `<option value="Factura" selected>Factura</option>`;
+    }
+    if (datoscompras.tipo_pago==='Credito') {
+      tipoPagoOptions += `<option value="Credito" selected>Credito</option>`;
+      tipoPagoOptions += `<option value="Contado">Contado</option>`;
+    }else{
+      tipoPagoOptions += `<option value="Credito">Credito</option>`;
+      tipoPagoOptions += `<option value="Contado" selected>Contado</option>`;
+    }
+  proveedores.forEach((proveedor) => {
+    if (proveedor.codproveedor === datoscompras.codproveedor) {
+    proveedoresOptions += `<option value="${proveedor.codproveedor}" selected>${proveedor.nomcompania}</option>`;
+  } else {
+    proveedoresOptions += `<option value="${proveedor.codproveedor}">${proveedor.nomcompania}</option>`;
+  }
+  });
+            Swal.fire({
+      title: 'Editar Compra',
+         showCancelButton: false, // Ocultar el botón de cancelar de SweetAlert
+        showConfirmButton: false ,// Ocultar el botón de confirmar de SweetAlert
+      html: `
+      <form id="agregarCompra" method="post" action="/edit">
+        <input type="number" class="form-control" id="id" name="id" value="${datoscompras.idcompra}" hidden required>
+  <div class="form-group">
+    <label for="fecha">Fecha de Compra:</label>
+    <input type="text" class="form-control" id="fecha" name="fecha" value="${datoscompras.fecha_compra}" required readonly>
+  </div>
+  <div class="form-group">
+    <label for="totalcompra">Total de la Compra</label>
+    <input type="text" class="form-control" id="totalcompra" name="totalcompra" value="${datoscompras.totalcompra}"  readonly required>
+  </div>
+  <div class="form-group">
+    <label for="proveedores">Proveedor</label>
+    <select class="form-control" id="proveedores" name="proveedores" required>
+        ${proveedoresOptions}           
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="tipodoc">Tipo de Documento:</label>
+    <select class="form-control" id="tipodoc" name="tipodoc" required>
+        ${tipodocumentoOptions}           
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="numerodocumento">Numero de Documento</label>
+    <input type="text" class="form-control" id="numerodocumento" name="numerodocumento" value ="${datoscompras.numerodocumento}"required>
+  </div>
+  <div class="form-group">
+    <label for="tipopago">Tipo de Pago</label>
+    <select class="form-control" id="tipopago" name="tipopago" required>
+        ${tipoPagoOptions}           
+    </select
+  </div>
+  <div class="input-group mb-3 mt-3">
+    <small class="mb-2" style="font-size: 15px; color: red;">*Recuerda que solo se aceptan imagenes de tipo <strong>jpg,png,jpeg</strong>.</small>
+  <label class="input-group-text" for="image">Imagen de la Boleta</label>
+  <input type="file" class="form-control" id="image" name="image">
+</div>
+      <br/>
+  <button type="submit" class="submit" style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" id="registrarBoton">Registrar</button>
+  <a href="#" class="cancel" style="background-color: #d33; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer; margin-left: 10px;" id="cancelarBoton">Cancelar</a>
+</form>`});
+flatpickr("#fecha", {
+  dateFormat: "d/m/Y",  // Formato de la fecha
+  locale: {
+    firstDayOfWeek: 1,  // Establece el primer día de la semana (Lunes)
+    weekdays: {
+      shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+      longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    },
+    months: {
+      shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+      longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    }
+  }
+});
+       // Agregar listener de evento para el botón "Registrar"
+       document.getElementById('agregarCompra').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Evitar que el formulario se envíe de inmediato
+    const formData = new FormData(event.target);
+    try {
+        // Enviar el formulario manualmente
+        const response = await axios.patch('/updatecompras',formData);
+        console.log(response)
+        Swal.fire('Modificado!', '', 'success');
+        setTimeout(function () {
+            location.reload();
+        }, 1000);
+    } catch (error) {
+        Swal.fire('Error', 'Ha ocurrido un error al enviar el formulario', 'error');
+    }
+});
+
+    document.getElementById('cancelarBoton').addEventListener('click', () => {
+        console.log('eres gei');
+        Swal.close();
+    }); 
+        } catch (error) {
+            console.log(error);
+         return res.status(500).json({
+        message: "Error al modificar el usuario",
+         error,
+    });
+        }
+       
+      }
+  </script>
+  <script>
+    function eliminar(id) {
+        Swal.fire({
+  title: '¿Confirmar eliminar el registro?',
+  icon : 'warning',
+  showCancelButton: true,
+  confirmButtonColor : "#3085d6",
+  cancelButtonColor : "#d33",
+  confirmButtonText: 'Confirmar',
+  denyButtonText: `Cancelar`,
+}).then((result) => {
+  /* Read more about isConfirmed, isDenied below */
+  if (result.isConfirmed) {
+     Swal.fire('Eliminado!', '', 'success')
+    //wait 5 seg 
+    setTimeout(function(){ window.location = '/deletedetallebyid/'+id }, 1000);
+  } else if (result.isDenied) {
+    Swal.fire('Changes are not saved', '', 'info')
+  }
+})
+    }
+  </script>
+  <script>
+    async function detalles(id) {
+      console.log(id)
+      const modal = document.getElementById("detalleCompras");
+    const modalFondo = document.getElementById("fondomodal");
+    modal.style.display = "block";
+    modalFondo.style.display = "block";
+    const response = await axios.get(`/detallecomprasbyid/${id}`)
+    const compras = response.data
+    const tabla = document.getElementById("mitabla1");
+    const tbody = tabla.querySelector("tbody");
+    tbody.innerHTML = "";
+    compras.forEach(cmp => {
+      const fila = document.createElement('tr')
+      fila.innerHTML = `
+      <td>${cmp.nombre}</td>
+      <td>${cmp.cantidad}</td>
+      <td>${cmp.precio}</td>
+      <td>${cmp.total}</td>
+    `
+    document.getElementById('detalleComprasBody').appendChild(fila)
+  });
+ 
+
+    
+   
+   
+
+
+
+    }
+  </script>
+  <script>
+    async function editarpago(id) {
+      const response = await axios.get(`/pagos/${id}`)
+      const pagos = response.data[0]
+      console.log(pagos)
+
+      try{
+      Swal.fire({
+      title: 'Editar Pago',
+         showCancelButton: false, // Ocultar el botón de cancelar de SweetAlert
+        showConfirmButton: false ,// Ocultar el botón de confirmar de SweetAlert
+      html: `
+      <form id="agregarPago" method="patch" action="/pagos">
+        <input type="number" class="form-control" id="id" name="id" value="${pagos.idpago}" hidden required>
+  <div class="form-group">
+    <label for="fecha">Fecha de Pago:</label>
+    <input type="text" class="form-control" id="fecha" name="fecha" value="${pagos.fecha_pago}" required readonly>
+  </div>
+  <div class="input-group mb-3 mt-3">
+    <small class="mb-2" style="font-size: 15px; color: red;">*Recuerda que solo se aceptan imagenes de tipo <strong>jpg,png,jpeg</strong>.</small>
+  <label class="input-group-text" for="image">Imagen de la Boleta</label>
+  <input type="file" class="form-control" id="image" name="image">
+</div>
+      <br/>
+  <button type="submit" class="submit" style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" id="registrarBoton">Registrar</button>
+  <a href="#" class="cancel" style="background-color: #d33; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer; margin-left: 10px;" id="cancelarBoton">Cancelar</a>
+</form>`});
+flatpickr("#fecha", {
+  dateFormat: "d/m/Y",  // Formato de la fecha
+  locale: {
+    firstDayOfWeek: 1,  // Establece el primer día de la semana (Lunes)
+    weekdays: {
+      shorthand: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
+      longhand: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    },
+    months: {
+      shorthand: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+      longhand: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    }
+  }
+});
+       // Agregar listener de evento para el botón "Registrar"
+       document.getElementById('agregarPago').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Evitar que el formulario se envíe de inmediato
+    const formData = new FormData(event.target);
+    try {
+        // Enviar el formulario manualmente
+        const response = await axios.patch('/pagos',formData);
+        console.log(response)
+        Swal.fire('Modificado!', '', 'success');
+        setTimeout(function () {
+            location.reload();
+        }, 1000);
+    } catch (error) {
+        Swal.fire('Error', 'Ha ocurrido un error al enviar el formulario', 'error');
+    }
+});
+
+    document.getElementById('cancelarBoton').addEventListener('click', () => {
+        console.log('eres gei');
+        Swal.close();
+    }); 
+        } catch (error) {
+            console.log(error);
+         return res.status(500).json({
+        message: "Error al modificar el Pago",
+         error,
+    });
+        }
+    }
+  </script>
+  <script>
+   async function detallepago(id){
+    console.log(id)
+      const modal = document.getElementById("detallepago");
+    const modalFondo = document.getElementById("fondomodalpago");
+    modal.style.display = "block";
+    modalFondo.style.display = "block";
+    const response = await axios.get(`/pagos/${id}`)
+    const pagos = response.data
+    const tabla = document.getElementById("mitabla2");
+    const tbody = tabla.querySelector("tbody");
+    tbody.innerHTML = "";
+    pagos.forEach(pago => {
+      function formatofecha(fecha) {
+    const options = { day: '2-digit', month: '2-digit', year: '2-digit' };
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-PE', options);
+    }
+      const fila = document.createElement('tr')
+      fila.innerHTML = `
+      <td>${formatofecha(pago.fecha_pago)}</td>
+      <td>
+        <img src="/assets/uploads/${pago.imagen_comprobante}" alt="" width="80px" onclick="abrirModal('/assets/uploads/${pago.imagen_comprobante}')" title="Haz clic para ampliar" style="cursor: pointer;">
+  
+      </td>
+      <td>
+        <a onclick="editarpago(${id})" class="btn btn-outline-info">editar</a>
+      </td>
+
+    `
+    document.getElementById('detallePagoBody').appendChild(fila)
+  });
+
+    }
+  </script>
+  <script>
+    function cerrarModal1() {
+      const modal = document.getElementById("detalleCompras");
+    const modalFondo = document.getElementById("fondomodal");
+    modal.style.display = "none";
+    document.getElementById("fondomodal").style.display = "none";
+
+    }
+  </script>
+    <script>
+      function cerrarModal2() {
+        const modal = document.getElementById("detallepago");
+      const modalFondo = document.getElementById("fondomodalpago");
+      modal.style.display = "none";
+      document.getElementById("fondomodalpago").style.display = "none";
+  
+      }
+    </script>
+  
+  <script>
+$(document).ready(function () {
+    $('#mitabla').DataTable();
+});
+  </script>
+  </body>
+</html>
