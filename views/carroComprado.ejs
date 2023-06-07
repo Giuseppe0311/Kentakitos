@@ -52,10 +52,10 @@
       <% let total = 0;  %>
         <ul>
           <% productos1.forEach((producto) => { %>
-              <img src="<%= producto.imagen %>" alt="Imagen del producto">
+              <img src="/assets/uploads/<%= producto.img %>" alt="Imagen del producto">
               <p id="titulo"><%= producto.nombre %></p>
               <p id="cantidad">Cantidad: <%= producto.cantidad %></p>
-              <p id="precio"><img src="/assets/uploads/<%= producto.img%>" alt=""></p>
+              <p id="precio">Precio: <%= producto.precio %> soles</p>
               <% total=total + (producto.cantidad*producto.precio) %>
           <% }) %>
         </ul>

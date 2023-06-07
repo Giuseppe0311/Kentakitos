@@ -145,20 +145,16 @@ function actualizarTotal() {
 // Creamos una función para mostrar los productos en el carrito
 botonComprar.addEventListener("click", comprarCarrito);
 
-async function comprarCarrito() {
-  console.log(productosEnCarrito,"en el script")
-  localStorage.setItem(
-    "productos-en-carrito",
-    JSON.stringify(productosEnCarrito)
-  );
-  console.log(productosEnCarrito,"en el script con el JSON")
+function comprarCarrito() {
+  const productosEnCarrito = JSON.parse(localStorage.getItem("productos-en-carrito")) || [];
+
   // Creamos una nueva variable para guardar solo los datos que necesitamos
   const datosVenta = productosEnCarrito.map((producto) => {
     return {
-      img: producto.img,
+      nombre:producto.nombre,
+      img:producto.img,
       cantidad: producto.cantidad,
       precio: producto.precio,
-      nombre: producto.nombre,
     };
   });
   productosEnCarrito.length = 0;
@@ -166,10 +162,30 @@ async function comprarCarrito() {
     "productos-en-carrito",
     JSON.stringify(productosEnCarrito)
   );
-  // Enviar los datos al servidor
+  
+  fetch("/user/venta", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(datosVenta),
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log("Venta realizada con éxito");
+        localStorage.removeItem("productos-en-carrito");
+      } else {
+        console.error("Ha ocurrido un error al realizar la venta");
+        console.log(datosVenta);
+      }
+    })
+    .catch((error) => {
+      console.error("Ha ocurrido un error al realizar la venta", error);
+    }); 
+  
   contenedorCarritoVacio.classList.add("disabled");
   contenedorCarritoProductos.classList.add("disabled");
   contenedorCarritoAcciones.classList.add("disabled");
   contenedorCarritoComprado.classList.remove("disabled");
-  await axios.post("/user/venta", { datosVenta });
+  
 }

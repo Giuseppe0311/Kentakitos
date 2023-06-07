@@ -16,8 +16,19 @@
       href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
     />
     <link rel="stylesheet" href="/assets/Style/main.css" />
+    <script type="text/javascript">
+      window.addEventListener("load", function() {
+        setTimeout(function() {
+          document.getElementById("ov-preloader").classList.add("fade-out");
+          document.getElementById("ov-preloader").style.pointerEvents = "none";
+        }, 500);
+      });
+    </script>
   </head>
   <body>
+    <div id="ov-preloader" class="ov-preloader" style="pointer-events: none;">
+      <div class="ov-icon"></div>
+    </div>
     <div class="wrapper">
       <header class="header-mobile">
         <h1 class="logo">KENTAKITOS HAMBURGUER</h1>
