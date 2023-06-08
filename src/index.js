@@ -1,4 +1,7 @@
 const express = require("express");
+const dotenv = require("dotenv");
+dotenv.config();
+
 const app = express();
 const path = require("path");
 const session = require("express-session");
@@ -55,4 +58,4 @@ const user = require("./routes/user.routes.js");
 app.use(user);
 const admreq = require("./routes/admreq.routes.js");
 app.use(admreq);
-app.listen(3200);
+app.listen(process.env.PORT);
