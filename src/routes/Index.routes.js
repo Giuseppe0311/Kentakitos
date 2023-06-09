@@ -14,7 +14,7 @@ const router = Router();
 // Rutas
 router.get("/", (req, res) => {
   valorlegueado = req.isAuthenticated();
-  res.render("index", { usuarioEstaLogueado: valorlegueado });
+  res.send("hola");
 });
 // Monta el enrutador en la aplicación
 
