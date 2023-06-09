@@ -13,7 +13,8 @@ const router = Router();
 // initializePassport(passport);
 // Rutas
 router.get("/", (req, res) => {
-  res.render("index");
+  valorlegueado = req.isAuthenticated();
+  res.render("index", { usuarioEstaLogueado: valorlegueado });
 });
 // Monta el enrutador en la aplicación
 

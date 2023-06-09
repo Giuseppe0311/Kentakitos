@@ -2,12 +2,10 @@
   "name": "fastfood",
   "version": "1.0.0",
   "description": "¡Bienvenido a KENTAKITOS! Somos una tienda de comida rápida que ofrece deliciosos platos como hamburguesas, salchipapas, chaufapapa, pollo broaster, refrescos y mucho más. En este repositorio encontrarás el código fuente de nuestro sitio web.",
-  "main": "index.js",
-  "engines": {
-    "node": "14.x"
-  },
+  "main": "auxserver.js",
   "scripts": {
-    "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",

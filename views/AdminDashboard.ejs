@@ -1,227 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap demo</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <script src="https://kit.fontawesome.com/b1d1afb1da.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/styletoggle.css" />
   </head>
   <body>
-    <main>
-      <nav class="navbar bg-light" aria-label="Light offcanvas navbar">
-        <div class="container-fluid">
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasNavbarLight"
-            aria-controls="offcanvasNavbarLight"
-          >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <a href="/user/adminPanel/Dashboard"><img src="/assets/images/logokentaadmin.png" alt="" width="50px"></a>
+    <div class="container mt-5">
+      <form action="/user/adminPanel/Dashboard" method="POST">
+      <table class="table caption-top table-light table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Usuario</th>
+            <th>Cargo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% usuarios.forEach(function(usuario) { %>
+          <tr>
+            <td><%= usuario.codusuario %></td>
+            <td><%= usuario.nombres %></td>
+            <td><%= usuario.correo %></td>
+            <td>
+                <select name="cargo_<%= usuario.codusuario %>" id="cargo">
+                  <option value=1 <% if(usuario.codperfil === 1) { %>selected<% } %>>Administrador</option>
+                  <option value=2 <% if(usuario.codperfil === 2) { %>selected<% } %>>Cajero</option>
+                  <option value=3 <% if(usuario.codperfil === 3) { %>selected<% } %>>Chef</option>
+                  <option value=4 <% if(usuario.codperfil === 4) { %>selected<% } %>>Mozo</option>
+                  <option value=5 <% if(usuario.codperfil === 5) { %>selected<% } %>>Cliente</option>
+              </select>
+            </td>
+            <td>
+            <select name="estado_<%= usuario.codusuario %>" id="cargo">
+                <option value='1'<% if(usuario.estado === '1') { %>selected<% } %>>Activo</option>
+                <option value='0'<% if(usuario.estado === '0') { %>selected<% } %>>Inactivo</option>
+            </select>  
+            </td>
           
-
-          <div
-            class="offcanvas offcanvas-start"
-            tabindex="-1"
-            id="offcanvasNavbarLight"
-            aria-labelledby="offcanvasNavbarLightLabel"
-          >
-            <div class="offcanvas-header">
-              <h5 class="offcanvas-title" id="offcanvasNavbarLightLabel">
-                <a href="/user/adminPanel/Dashboard"><img src="/assets/images/logokentaadmin.png" alt="" width="80px"></a>
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="offcanvas"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="offcanvas-body">
-              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                <li class="nav-item">
-                  <a class="nav-link active fw-bold" aria-current="page" href="/user/adminPanel/Dashboard">HOME</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    USUARIOS
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <a class="dropdown-item" href="/user/admin/register">Registrar Usuarios</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/user/admin/permission">Asignar Permisos</a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item dropdown">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    PRODUCTOS
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <a class="dropdown-item" href="/productos">Registrar Productos</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/categorias">Registrar Categorias</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/proveedores"
-                        >Registrar Proveedores</a
-                      >
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/marcas"
-                        >Registrar Marcas</a
-                      >
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item dropdown">
-                  <a
-                    class="nav-link dropdown-toggle"
-                    href="#"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    COMPRAS
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <a class="dropdown-item" href="/compras"> Registar Compras</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/detallecompras"> Mis Compras</a>
-                    </li>
-                    <li>
-                      <a class="dropdown-item" href="/allpagos"> Mis Pagos</a>
-                    </li>
-                  </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      VENTAS
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a class="dropdown-item" href="/menues"> Registar Menu</a>
-                      </li>
-                    </ul>
-                  </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
-      <!-- aqui empieza el contenido -->
-      <div class="container">
-        <div class="bg-light p-2">
-          <div class="col-sm-12 py-5">
-            <h1 class="display-5 fw-normal  mb-5 text-center">Bienvenido </h1>
-              <!-- LIMITE -->
-              <div class="container">
-                <div class="row  gy-5">
-                  <div class="col-8">
-                    <div
-                    class="container"
-                    style="display: flex; width: 100%; justify-content: center"
-                  >
-                    <div style="width: 700px">
-                      <canvas id="myChart" style="width: 100px"></canvas>
-                    </div>
-                  </div>
-                  </div>
-                  <div class="col-4">
-                    Column 2 
-                  </div>
-                  <div class="col-6">
-                    Column 3
-                  </div>
-                  <div class="col-6">
-                    Column 4
-                  </div>
-                  <div class="col-6">
-                    Column 5 
-                  </div>
-                  <div class="col-6">
-                    Column 6
-                  </div>
-                </div>
-              </div>
-              
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      <div class="container mt-5 d-flex justify-items-center flex-column align-items-center">
+        <button type="submit" id="btnActualizar" name="btnActualizar" style="border: none;"><img src="/assets/images/guardar.png" alt=""></button>
+        <p>GUARDAR</p>
+        <a href="/user/logout">Logout</a>
+        <a href="/user/adminPanel/register">Registrar</a>
         
-              
-              <!-- INICIO DE LOS SCRIPT -->
-            <script>
-              const ctx = document.getElementById("myChart");
-        
-              new Chart(ctx, {
-                type: "bar",
-                data: {
-                  labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-                  datasets: [
-                    {
-                      label: "# of Votes",
-                      data: [12, 19, 3, 5, 2, 3],
-                      borderWidth: 1,
-                    },
-                  ],
-                },
-                options: {
-                  scales: {
-                    y: {
-                      beginAtZero: true,
-                    },
-                  },
-                },
-              });
-            </script>
-          </div>
-        </div>
-      </div>
-    </main>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>    
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-      crossorigin="anonymous"
-    >
-  </script>
-
-
-  </body>
+        </div> 
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+   </div>
+</body>
+  
 </html>

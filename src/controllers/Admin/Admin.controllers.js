@@ -4,7 +4,11 @@ const bcrypt = require("bcrypt");
 const { pool } = require("../../dbConfig.js");
 
 const Todashboard = async (req, res) => {
-  res.render("AdminDashboard");
+  const results = await pool.query(
+    `SELECT codusuario,nombres, correo, perfiles.nombre as cargo,perfiles.codperfil, usuarios.estado  FROM usuarios JOIN perfiles ON usuarios.codperfil = perfiles.codperfil WHERE usuarios.estado='1' ORDER BY codusuario asc`
+  );
+  req.flash("usuarios", results.rows);
+  res.render("AdminDashboard", { usuarios: results.rows });
 };
 
 const Post_dashboard = async function (req, res) {

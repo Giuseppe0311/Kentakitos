@@ -1,7 +1,4 @@
 const express = require("express");
-const dotenv = require("dotenv");
-dotenv.config();
-
 const app = express();
 const path = require("path");
 const session = require("express-session");
@@ -10,7 +7,7 @@ const passport = require("passport");
 const multer = require("multer");
 const { uuid } = require("uuidv4");
 const cors = require("cors");
-const initializePassport = require("./src/controllers/Passport/passport.js");
+const initializePassport = require("./controllers/Passport/passport.js");
 const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     cb(null, uuid() + path.extname(file.originalname));
@@ -19,7 +16,7 @@ const storage = multer.diskStorage({
 });
 app.use(cors());
 app.use("/assets", express.static("public"));
-app.set("views", path.join(__dirname, "./views"));
+app.set("views", path.join(__dirname, "../views"));
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -50,12 +47,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 initializePassport(passport);
-const Admin = require("./src/routes/Admin.routes.js");
+const Admin = require("./routes/Admin.routes.js");
 app.use(Admin);
-const index = require("./src/routes/Index.routes.js");
+const index = require("./routes/Index.routes.js");
 app.use(index);
-const user = require("./src/routes/user.routes.js");
+const user = require("./routes/user.routes.js");
 app.use(user);
-const admreq = require("./src/routes/admreq.routes.js");
+const admreq = require("./routes/admreq.routes.js");
 app.use(admreq);
-app.listen(process.env.PORT);
+app.listen(3200);
