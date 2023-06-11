@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt"); 
+const bcrypt = require("bcrypt");
 const { pool } = require("../../dbConfig.js");
 const globals = require("../Passport/globals.js");
 const { json } = require("express");
@@ -26,12 +26,12 @@ const getResumen = async (req, res) => {
       JOIN ventas ON detalle_ventas.codventa = ventas.codventa
       WHERE detalle_ventas.estado = '4'
       Group by detalle_ventas.codventa, detalle_ventas.codplatillo, detalle_ventas.cantidad, detalle_ventas.estado, menues.nombre, menues.precio, ventas.tipoventa, detalle_ventas.estadonuevo
-      ORDER BY detalle_ventas.codventa`,
+      ORDER BY detalle_ventas.codventa`
   );
   req.session.pedidos = userQueryResult.rows;
   pedidos = req.session.pedidos;
-  res.render("resumeVentas", { pedidos,pedido_mesas });
-}
+  res.render("resumeVentas", { pedidos, pedido_mesas });
+};
 
 const getObtenercodventa = async (req, res) => {
   try {
@@ -39,40 +39,38 @@ const getObtenercodventa = async (req, res) => {
       `SELECT codventa
       FROM ventas
       ORDER BY codventa DESC
-      LIMIT 1;`,
+      LIMIT 1;`
     );
-    console.log(codventaQueryResult.rows,"datos")
+    console.log(codventaQueryResult.rows, "datos");
     res.json(codventaQueryResult.rows);
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error); // Imprime el error en la consola para el análisis
     res.status(500).json({ error: "Error al generar la boleta" });
   }
-}
+};
 
 const postcheckerGenerateLlevar = async (req, res) => {
   try {
     const nombreCajero = req.body.nombreCajero;
     const detalle_pedido = JSON.parse(req.body.detalle_pedido);
-    const {DNI,nombres, apellidos, telefono, direccion, fechaHoraActual} = req.body;
-    console.log(DNI, nombres, apellidos, telefono, direccion, fechaHoraActual)
-    console.log("nombre del cajero:",nombreCajero)
-    console.log(detalle_pedido, "detalle pedido para guardar")
-    
-
+    const { DNI, nombres, apellidos, telefono, direccion, fechaHoraActual } =
+      req.body;
+    console.log(DNI, nombres, apellidos, telefono, direccion, fechaHoraActual);
+    console.log("nombre del cajero:", nombreCajero);
+    console.log(detalle_pedido, "detalle pedido para guardar");
 
     let total = 0;
     await pool.query("BEGIN");
 
     const usuarioInsertResult = await pool.query(
       `INSERT INTO usuarios (nombres,apellidos, celular, direccion,dni,codperfil,estado) VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING codusuario`,
-      [nombres, apellidos, telefono, direccion, DNI,'5', '1']
+      [nombres, apellidos, telefono, direccion, DNI, "5", "1"]
     );
     const codusuario = usuarioInsertResult.rows[0].codusuario;
 
     const ventaInsertResult = await pool.query(
       `INSERT INTO ventas (estado) VALUES ($1) RETURNING codventa`,
-      ['4']
+      ["4"]
     );
     const codventa = ventaInsertResult.rows[0].codventa;
 
@@ -81,18 +79,18 @@ const postcheckerGenerateLlevar = async (req, res) => {
       const cantidad = parseInt(detalle_pedido[i].cantidad);
       const precio = parseFloat(detalle_pedido[i].precio);
       console.log("platillo:", platillo, cantidad, precio);
-      total = total + (precio * cantidad);
-      
+      total = total + precio * cantidad;
+
       console.log(total);
       await pool.query(
         `INSERT INTO detalle_ventas (cantidad, codplatillo,codventa, estado,precio,estadonuevo) VALUES ($1,$2,$3,$4,$5,$6)`,
-        [cantidad, platillo, codventa, '4', precio, '3']
+        [cantidad, platillo, codventa, "4", precio, "3"]
       );
     }
-    total +=2;
+    total += 2;
     await pool.query(
       `update ventas set tipoventa=$1, fechayhora=$2, codusuario=$3, preciototal=$4 where codventa= $5`,
-      ['paraLlevar', fechaHoraActual,codusuario,total, codventa ]
+      ["paraLlevar", fechaHoraActual, codusuario, total, codventa]
     );
     console.log(total);
     await pool.query("COMMIT");
@@ -102,25 +100,24 @@ const postcheckerGenerateLlevar = async (req, res) => {
     await pool.query("ROLLBACK");
     req.flash("error_msg", err.message);
     res.status(400).send({ message: err.message });
-    
   }
 };
 
 const postcheckerLlevar = async (req, res) => {
   const estadoTabla = req.body.estado_tabla;
   let pedido_llevar = undefined;
-  console.log(estadoTabla, "el estado de la tabla")
-  if (estadoTabla===1) {
+  console.log(estadoTabla, "el estado de la tabla");
+  if (estadoTabla === 1) {
     const codplatillo = req.body.platillo;
     const cantidades = req.body.cantidades;
     const precios = req.body.precios;
-    console.log(codplatillo, cantidades, precios, "pedido_llevar")
+    console.log(codplatillo, cantidades, precios, "pedido_llevar");
     pedido_llevar = [];
     for (let i = 0; i < codplatillo.length; i++) {
       const pedido = {
         codplatillo: codplatillo[i],
         cantidad: cantidades[i],
-        precio: precios[i]
+        precio: precios[i],
       };
       pedido_llevar.push(pedido);
     }
@@ -128,8 +125,7 @@ const postcheckerLlevar = async (req, res) => {
   console.log(pedido_llevar, "pedido_llevar en un solo array");
   req.session.pedido_llevar = pedido_llevar;
   res.redirect("/VentasLlevar");
-}
-
+};
 
 const Tologin = (req, res) => {
   const usuarioEstaLogueado = req.isAuthenticated();
@@ -151,57 +147,57 @@ const ToCart = function (req, res) {
 const thanks = function (req, res) {
   const usuarioEstaLogueado = req.isAuthenticated();
   res.render("gracias", { usuarioEstaLogueado });
-}
+};
 
 const getWaiter = async (req, res) => {
   res.render("Waiter");
-}
+};
 
-const Towaiter = async  (req, res) => {
+const Towaiter = async (req, res) => {
   const mesa1QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '1';`,
+    WHERE codmesa = '1';`
   );
   const mesa2QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '2';`,
+    WHERE codmesa = '2';`
   );
   const mesa3QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '3';`,
+    WHERE codmesa = '3';`
   );
   const mesa4QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '4';`,
+    WHERE codmesa = '4';`
   );
   const mesa5QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '5';`,
+    WHERE codmesa = '5';`
   );
   const mesa6QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '7';`,
+    WHERE codmesa = '7';`
   );
   const mesa7QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '8';`,
+    WHERE codmesa = '8';`
   );
   const mesa8QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '9';`,
+    WHERE codmesa = '9';`
   );
   const mesa9QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '10';`,
+    WHERE codmesa = '10';`
   );
   let buttonestado1 = mesa1QueryResult.rows[0].estado;
   let buttonestado2 = mesa2QueryResult.rows[0].estado;
@@ -212,70 +208,79 @@ const Towaiter = async  (req, res) => {
   let buttonestado7 = mesa7QueryResult.rows[0].estado;
   let buttonestado8 = mesa8QueryResult.rows[0].estado;
   let buttonestado9 = mesa9QueryResult.rows[0].estado;
-  console.log(buttonestado1, buttonestado2, buttonestado3,buttonestado4)
-  res.render("WaiterDashboard", { buttonestado1, buttonestado2 ,buttonestado3,buttonestado4,buttonestado5,buttonestado6,buttonestado7,buttonestado8,buttonestado9})
+  console.log(buttonestado1, buttonestado2, buttonestado3, buttonestado4);
+  res.render("WaiterDashboard", {
+    buttonestado1,
+    buttonestado2,
+    buttonestado3,
+    buttonestado4,
+    buttonestado5,
+    buttonestado6,
+    buttonestado7,
+    buttonestado8,
+    buttonestado9,
+  });
 };
 
 const TowaiterPlatillo = async (req, res) => {
   try {
     const platillosQueryResult = await pool.query(
-      `select codplatillo, precio, nombre from menues`,
+      `select codplatillo, precio, nombre from menues`
     );
     console.log(platillosQueryResult);
     res.json(platillosQueryResult.rows);
-  }
-  catch (error) {}
-}
+  } catch (error) {}
+};
 
 const getCheker = async (req, res) => {
   res.render("Checker");
-}
+};
 
 const checkerPresencial = async (req, res) => {
   const mesa1QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 1;`,
+    WHERE codmesa = 1;`
   );
   const mesa2QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 2;`,
+    WHERE codmesa = 2;`
   );
   const mesa3QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 3;`,
+    WHERE codmesa = 3;`
   );
   const mesa4QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 4;`,
+    WHERE codmesa = 4;`
   );
   const mesa5QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 5;`,
+    WHERE codmesa = 5;`
   );
   const mesa6QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 7;`,
+    WHERE codmesa = 7;`
   );
   const mesa7QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 8;`,
+    WHERE codmesa = 8;`
   );
   const mesa8QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 9;`,
+    WHERE codmesa = 9;`
   );
   const mesa9QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 10;`,
+    WHERE codmesa = 10;`
   );
   let buttonestado1 = mesa1QueryResult.rows[0].estado;
   let buttonestado2 = mesa2QueryResult.rows[0].estado;
@@ -287,64 +292,66 @@ const checkerPresencial = async (req, res) => {
   let buttonestado8 = mesa8QueryResult.rows[0].estado;
   let buttonestado9 = mesa9QueryResult.rows[0].estado;
 
-  console.log(buttonestado1, " Mesa 1 en el cajero")
-  console.log(buttonestado2, " Mesa 2 en el cajero")
-  console.log(buttonestado3, " Mesa 3 en el cajero")
-  console.log(buttonestado4, " Mesa 4 en el cajero")
-  console.log(buttonestado5, " Mesa 5 en el cajero")
-  console.log(buttonestado6, " Mesa 6 en el cajero")
-  console.log(buttonestado7, " Mesa 7 en el cajero")
-  console.log(buttonestado8, " Mesa 8 en el cajero")
-  console.log(buttonestado9, " Mesa 9 en el cajero")
+  console.log(buttonestado1, " Mesa 1 en el cajero");
+  console.log(buttonestado2, " Mesa 2 en el cajero");
+  console.log(buttonestado3, " Mesa 3 en el cajero");
+  console.log(buttonestado4, " Mesa 4 en el cajero");
+  console.log(buttonestado5, " Mesa 5 en el cajero");
+  console.log(buttonestado6, " Mesa 6 en el cajero");
+  console.log(buttonestado7, " Mesa 7 en el cajero");
+  console.log(buttonestado8, " Mesa 8 en el cajero");
+  console.log(buttonestado9, " Mesa 9 en el cajero");
 
   res.render("CheckerVentasPresencial", {
-    buttonestado1, buttonestado2, buttonestado3, buttonestado4, buttonestado5, buttonestado6, buttonestado7,
-  buttonestado8,buttonestado9});
-}
+    buttonestado1,
+    buttonestado2,
+    buttonestado3,
+    buttonestado4,
+    buttonestado5,
+    buttonestado6,
+    buttonestado7,
+    buttonestado8,
+    buttonestado9,
+  });
+};
 ///////
 const postWaiter1 = async (req, res) => {
   const estadoBoton = req.body.estadoBoton;
   const formValues = req.body.formValues;
   let codmesa;
   let tipoventa;
-  if (estadoBoton === '0' || formValues === '1') {
+  if (estadoBoton === "0" || formValues === "1") {
     codmesa = 1;
-    tipoventa = 'mesa_1';
-  } else if (estadoBoton ==='2' || formValues === '3') {
+    tipoventa = "mesa_1";
+  } else if (estadoBoton === "2" || formValues === "3") {
     codmesa = 2;
-    tipoventa = 'mesa_2';
-  } else if (estadoBoton === '4' || formValues === '5') {
+    tipoventa = "mesa_2";
+  } else if (estadoBoton === "4" || formValues === "5") {
     codmesa = 3;
-    tipoventa = 'mesa_3'
-  }
-  else if (estadoBoton === '6' || formValues === '7') {
+    tipoventa = "mesa_3";
+  } else if (estadoBoton === "6" || formValues === "7") {
     codmesa = 4;
-    tipoventa = 'mesa_4'
-  }
-  else if (estadoBoton === '8' || formValues === '9') {
+    tipoventa = "mesa_4";
+  } else if (estadoBoton === "8" || formValues === "9") {
     codmesa = 5;
-    tipoventa = 'mesa_5'
-  }
-  else if (estadoBoton === '10' || formValues === '11') {
+    tipoventa = "mesa_5";
+  } else if (estadoBoton === "10" || formValues === "11") {
     codmesa = 7;
-    tipoventa = 'mesa_6'
-  }
-  else if (estadoBoton === '12' || formValues === '13') {
+    tipoventa = "mesa_6";
+  } else if (estadoBoton === "12" || formValues === "13") {
     codmesa = 8;
-    tipoventa = 'mesa_7'
-  }
-  else if (estadoBoton === '14' || formValues === '15') {
+    tipoventa = "mesa_7";
+  } else if (estadoBoton === "14" || formValues === "15") {
     codmesa = 9;
-    tipoventa = 'mesa_8'
-  }
-  else if (estadoBoton === '16' || formValues === '17') {
+    tipoventa = "mesa_8";
+  } else if (estadoBoton === "16" || formValues === "17") {
     codmesa = 10;
-    tipoventa = 'mesa_9'
+    tipoventa = "mesa_9";
   }
   console.log(formValues, "uwu", codmesa);
   console.log(estadoBoton);
   console.log(tipoventa);
-  if (estadoBoton !== undefined && estadoBoton !== '') {
+  if (estadoBoton !== undefined && estadoBoton !== "") {
     try {
       const codplatillo = req.body.platillo;
       const cantidades = req.body.cantidades;
@@ -355,7 +362,7 @@ const postWaiter1 = async (req, res) => {
       pool.query("BEGIN");
       const ventaInsertResult = await pool.query(
         `INSERT INTO ventas (tipoventa, estado) VALUES ($1, $2) RETURNING codventa`,
-        [tipoventa, '2']
+        [tipoventa, "2"]
       );
       console.log(ventaInsertResult.rows, "codigo de venta");
       codventa = ventaInsertResult.rows[0].codventa;
@@ -363,14 +370,14 @@ const postWaiter1 = async (req, res) => {
         const platillo = codplatillo[i];
         const cantidad = parseInt(cantidades[i]);
         const precio = parseFloat(precios[i]);
-        console.log("platillo:",platillo, cantidad, precio);
+        console.log("platillo:", platillo, cantidad, precio);
         if (precio !== null) {
-          const estado = '1';
-          total = total + (precio * cantidad);
+          const estado = "1";
+          total = total + precio * cantidad;
           console.log(total);
           await pool.query(
             `INSERT INTO pedido_mesas (codventa, codmesa,platillo, cantidad, precio,estado) VALUES ($1,$2,$3,$4,$5,$6)`,
-            [codventa,codmesa, platillo, cantidad, precio, estado]
+            [codventa, codmesa, platillo, cantidad, precio, estado]
           );
         }
       }
@@ -389,11 +396,11 @@ const postWaiter1 = async (req, res) => {
     } catch (err) {
       console.error(err.message);
       await pool.query("ROLLBACK");
-      
+
       console.log("error al enviar a la BD");
     }
   }
-  if (formValues !== undefined && formValues !== '') {
+  if (formValues !== undefined && formValues !== "") {
     await pool.query(
       `UPDATE mesas
       SET estado = $1
@@ -401,7 +408,7 @@ const postWaiter1 = async (req, res) => {
       [formValues, codmesa]
     );
   }
-}
+};
 
 const checkermesas = async (req, res) => {
   let userId = globals.getUserId();
@@ -414,15 +421,16 @@ const checkermesas = async (req, res) => {
     `
   );
 
-  const userQueryResult = await pool.query(`SELECT nombres, apellidos, correo, dni from usuarios
+  const userQueryResult = await pool.query(
+    `SELECT nombres, apellidos, correo, dni from usuarios
   where codusuario= $1;`,
-  [userId]
+    [userId]
   );
   let cajeroDatos = userQueryResult.rows[0];
   req.session.pedidoMesas = checkerQueryResult.rows;
   pedido_mesas = req.session.pedidoMesas;
-  res.render("CheckerVentasMesas", {pedido_mesas,cajeroDatos});
-}
+  res.render("CheckerVentasMesas", { pedido_mesas, cajeroDatos });
+};
 
 const postcheckermesas = async (req, res) => {
   try {
@@ -431,7 +439,7 @@ const postcheckermesas = async (req, res) => {
     const cantidades = req.body.cantidades;
     const precios = req.body.precios;
     let total = 0;
-    console.log(codventa, "codigo de venta")
+    console.log(codventa, "codigo de venta");
     await pool.query("BEGIN");
     const codmesaQueryResult = await pool.query(
       `select codmesa from pedido_mesas
@@ -440,13 +448,16 @@ const postcheckermesas = async (req, res) => {
     );
     const codmesa = codmesaQueryResult.rows[0].codmesa;
 
-    const detalleQueryResult = await pool.query(`
+    const detalleQueryResult = await pool.query(
+      `
     select platillo from pedido_mesas where codventa= $1
-    `, [codventa])
+    `,
+      [codventa]
+    );
     const platilloInsertado = detalleQueryResult.rows.length;
-    console.log(platilloInsertado, "cantidad de platillos en la BD")
-    
-    console.log(codmesa, "codigo de mesa")
+    console.log(platilloInsertado, "cantidad de platillos en la BD");
+
+    console.log(codmesa, "codigo de mesa");
     for (let i = 0; i < nombrePlatillo.length; i++) {
       const platillo = parseInt(nombrePlatillo[i]);
       const cantidad = parseInt(cantidades[i]);
@@ -455,33 +466,40 @@ const postcheckermesas = async (req, res) => {
       let codigoSimilarEncontrado = false; // Mover la variable aquí
       for (let j = 0; j < platilloInsertado; j++) {
         const codigoPlatillo = detalleQueryResult.rows[j].platillo;
-        console.log(codigoPlatillo,"codigo platillo en la bd")
+        console.log(codigoPlatillo, "codigo platillo en la bd");
         if (codigoPlatillo === platillo) {
           codigoSimilarEncontrado = true;
           break;
         }
       }
-      console.log(codigoSimilarEncontrado ? "Hay un código similar en la BD" : "No hay códigos similares en la BD");
-      total = total + (precio * cantidad);
-      if (precio !== null & codigoSimilarEncontrado===false) {
+      console.log(
+        codigoSimilarEncontrado
+          ? "Hay un código similar en la BD"
+          : "No hay códigos similares en la BD"
+      );
+      total = total + precio * cantidad;
+      if ((precio !== null) & (codigoSimilarEncontrado === false)) {
         console.log(total);
         await pool.query(
           `INSERT INTO pedido_mesas (codventa, codmesa,platillo, cantidad, precio,estado,estadonuevo) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-          [codventa, codmesa, platillo, cantidad, precio,'1', '3']
+          [codventa, codmesa, platillo, cantidad, precio, "1", "3"]
         );
-      } else if (codigoSimilarEncontrado==true) {
-        const datoCantidadQueryResult = await pool.query(`
+      } else if (codigoSimilarEncontrado == true) {
+        const datoCantidadQueryResult = await pool.query(
+          `
         select cantidad from pedido_mesas where codventa= $1 and platillo=$2;
-        `,[codventa,platillo])
+        `,
+          [codventa, platillo]
+        );
 
         let datoCantidad = parseFloat(datoCantidadQueryResult.rows[0].cantidad);
-        console.log(datoCantidad, "cantidad en la BD")
-        console.log(cantidad, "cantidad en la vista")
+        console.log(datoCantidad, "cantidad en la BD");
+        console.log(cantidad, "cantidad en la vista");
         datoCantidad = datoCantidad + cantidad;
-        console.log(datoCantidad, "cantidaad enviado en la BD")
+        console.log(datoCantidad, "cantidaad enviado en la BD");
         await pool.query(
           `update pedido_mesas set cantidad=$1 where codventa= $2 and platillo= $3;`,
-          [datoCantidad,codventa,platillo]
+          [datoCantidad, codventa, platillo]
         );
       }
     }
@@ -492,13 +510,13 @@ const postcheckermesas = async (req, res) => {
     );
     let totalVenta = totalQueryResult.rows[0].preciototal;
     total = total + parseFloat(totalVenta);
-    console.log(totalVenta,"base de datos")
-    console.log(total, "total enviado")
+    console.log(totalVenta, "base de datos");
+    console.log(total, "total enviado");
 
-    await pool.query(
-      `UPDATE ventas SET preciototal = $1 WHERE codventa = $2`,
-      [total, codventa]
-    );
+    await pool.query(`UPDATE ventas SET preciototal = $1 WHERE codventa = $2`, [
+      total,
+      codventa,
+    ]);
     await pool.query("COMMIT");
     console.log("enviado a la base de datos");
   } catch (err) {
@@ -507,7 +525,7 @@ const postcheckermesas = async (req, res) => {
     req.flash("error_msg", err.message);
     res.status(400).send({ message: err.message });
   }
-}
+};
 
 const postcheckerweb = async (req, res) => {
   try {
@@ -516,13 +534,16 @@ const postcheckerweb = async (req, res) => {
     const cantidades = req.body.cantidades;
     const precios = req.body.precios;
     let total = 0;
-    console.log(codventa, "codigo de venta")
+    console.log(codventa, "codigo de venta");
     await pool.query("BEGIN");
-    const detalleQueryResult = await pool.query(`
+    const detalleQueryResult = await pool.query(
+      `
     select codplatillo from detalle_ventas where codventa= $1
-    `, [codventa])
+    `,
+      [codventa]
+    );
     const platilloInsertado = detalleQueryResult.rows.length;
-    console.log(platilloInsertado,"cantidad de platillos en la BD")
+    console.log(platilloInsertado, "cantidad de platillos en la BD");
 
     for (let i = 0; i < nombrePlatillo.length; i++) {
       const platillo = parseInt(nombrePlatillo[i]);
@@ -532,33 +553,40 @@ const postcheckerweb = async (req, res) => {
       let codigoSimilarEncontrado = false; // Mover la variable aquí
       for (let j = 0; j < platilloInsertado; j++) {
         const codigoPlatillo = detalleQueryResult.rows[j].codplatillo;
-        console.log(codigoPlatillo,"codigo platillo en la bd")
+        console.log(codigoPlatillo, "codigo platillo en la bd");
         if (codigoPlatillo === platillo) {
-            codigoSimilarEncontrado = true;
-            break;
+          codigoSimilarEncontrado = true;
+          break;
         }
       }
-      console.log(codigoSimilarEncontrado ? "Hay un código similar en la BD" : "No hay códigos similares en la BD");
-      total = total + (precio * cantidad);
-      if (precio !== null & codigoSimilarEncontrado ===false) {
+      console.log(
+        codigoSimilarEncontrado
+          ? "Hay un código similar en la BD"
+          : "No hay códigos similares en la BD"
+      );
+      total = total + precio * cantidad;
+      if ((precio !== null) & (codigoSimilarEncontrado === false)) {
         console.log(total);
         await pool.query(
           `INSERT INTO detalle_ventas (cantidad, codplatillo,codventa, estado,precio,estadonuevo) VALUES ($1,$2,$3,$4,$5,$6)`,
-          [cantidad,platillo,codventa,'2',precio,'3']
+          [cantidad, platillo, codventa, "2", precio, "3"]
         );
-      } else if (codigoSimilarEncontrado ===true) {
-        const datoCantidadQueryResult = await pool.query(`
+      } else if (codigoSimilarEncontrado === true) {
+        const datoCantidadQueryResult = await pool.query(
+          `
         select cantidad from detalle_ventas where codventa= $1 and codplatillo=$2;
-        `,[codventa,platillo])
+        `,
+          [codventa, platillo]
+        );
 
         let datoCantidad = parseFloat(datoCantidadQueryResult.rows[0].cantidad);
-        console.log(datoCantidad, "cantidad en la BD")
-        console.log(cantidad, "cantidad en la vista")
+        console.log(datoCantidad, "cantidad en la BD");
+        console.log(cantidad, "cantidad en la vista");
         datoCantidad = datoCantidad + cantidad;
-        console.log(datoCantidad, "cantidaad enviado en la BD")
+        console.log(datoCantidad, "cantidaad enviado en la BD");
         await pool.query(
           `update detalle_ventas set cantidad=$1 where codventa= $2 and codplatillo= $3;`,
-          [datoCantidad,codventa,platillo]
+          [datoCantidad, codventa, platillo]
         );
       }
     }
@@ -569,13 +597,13 @@ const postcheckerweb = async (req, res) => {
     );
     let totalVenta = totalQueryResult.rows[0].preciototal;
     let total1 = total + parseFloat(totalVenta);
-    console.log(totalVenta,"base de datos")
-    console.log(total1, "total enviado")
+    console.log(totalVenta, "base de datos");
+    console.log(total1, "total enviado");
 
-    await pool.query(
-      `UPDATE ventas SET preciototal = $1 WHERE codventa = $2`,
-      [total1, codventa]
-    );
+    await pool.query(`UPDATE ventas SET preciototal = $1 WHERE codventa = $2`, [
+      total1,
+      codventa,
+    ]);
     await pool.query("COMMIT");
     console.log("enviado a la base de datos");
   } catch (err) {
@@ -584,12 +612,12 @@ const postcheckerweb = async (req, res) => {
     req.flash("error_msg", err.message);
     res.status(400).send({ message: err.message });
   }
-}
+};
 
 const deleteCheckerMesas = async (req, res) => {
   const tipoventa = parseInt(req.body.tipoventa);
-  if(tipoventa === 0){
-    try{
+  if (tipoventa === 0) {
+    try {
       const platillo = req.body.platillo;
       const codventa = req.body.codventa;
       const precio = parseFloat(req.body.precio);
@@ -598,9 +626,10 @@ const deleteCheckerMesas = async (req, res) => {
       console.log(platillo, "el platillo");
       console.log(codventa, "codigo de venta");
       await pool.query("BEGIN");
-      await pool.query(`DELETE FROM pedido_mesas WHERE codventa = $1 AND platillo = $2`,
-      [codventa,platillo]
-      )
+      await pool.query(
+        `DELETE FROM pedido_mesas WHERE codventa = $1 AND platillo = $2`,
+        [codventa, platillo]
+      );
       precio1 = cantidad * precio;
       const totalQueryResult = await pool.query(
         `select preciototal from ventas
@@ -608,9 +637,9 @@ const deleteCheckerMesas = async (req, res) => {
         [codventa]
       );
       let totalVenta = parseFloat(totalQueryResult.rows[0].preciototal);
-      console.log(totalVenta,"base de datos")
+      console.log(totalVenta, "base de datos");
       totalVenta = totalVenta - precio1;
-      console.log(totalVenta,"enviado a la BD")
+      console.log(totalVenta, "enviado a la BD");
 
       await pool.query(
         `UPDATE ventas SET preciototal = $1 WHERE codventa = $2`,
@@ -634,11 +663,16 @@ const deleteCheckerMesas = async (req, res) => {
       console.log(precio);
       console.log(platillo, "el platillo web");
       console.log(codventa, "codigo de venta");
-      console.log(cantidad, precio,"datos separados desde la vista(cantidad y precio)");
+      console.log(
+        cantidad,
+        precio,
+        "datos separados desde la vista(cantidad y precio)"
+      );
       await pool.query("BEGIN");
-      await pool.query(`DELETE FROM detalle_ventas WHERE codventa = $1 AND codplatillo = $2`,
-      [codventa,platillo]
-      )
+      await pool.query(
+        `DELETE FROM detalle_ventas WHERE codventa = $1 AND codplatillo = $2`,
+        [codventa, platillo]
+      );
       precio1 = cantidad * precio;
       const totalQueryResult = await pool.query(
         `select preciototal from ventas
@@ -646,10 +680,10 @@ const deleteCheckerMesas = async (req, res) => {
         [codventa]
       );
       let totalVenta = parseFloat(totalQueryResult.rows[0].preciototal);
-      console.log(totalVenta, "base de datos")
-      console.log(precio1,"total en la vista")
-      parseFloat(totalVenta = totalVenta - precio1);
-      console.log(totalVenta,"enviado a la BD")
+      console.log(totalVenta, "base de datos");
+      console.log(precio1, "total en la vista");
+      parseFloat((totalVenta = totalVenta - precio1));
+      console.log(totalVenta, "enviado a la BD");
 
       await pool.query(
         `UPDATE ventas SET preciototal = $1 WHERE codventa = $2`,
@@ -664,7 +698,7 @@ const deleteCheckerMesas = async (req, res) => {
       res.status(400).send({ message: err.message });
     }
   }
-}
+};
 
 let venta = null;
 const Tochecker = async (req, res) => {
@@ -679,18 +713,20 @@ const Tochecker = async (req, res) => {
       GROUP BY detalle_ventas.codventa, detalle_ventas.codplatillo, detalle_ventas.estado,detalle_ventas.estadonuevo, 
       menues.nombre, menues.precio, ventas.tipoventa, ventas.preciototal
 	    ORDER BY detalle_ventas.codventa
-  `);
+  `
+  );
 
-  const userQueryResult = await pool.query(`SELECT nombres, apellidos, correo, dni from usuarios
+  const userQueryResult = await pool.query(
+    `SELECT nombres, apellidos, correo, dni from usuarios
   where codusuario= $1;`,
-  [userId]
+    [userId]
   );
   let cajeroDatos = userQueryResult.rows[0];
   req.session.venta = ventaQueryResult.rows;
   console.log(cajeroDatos);
   venta = req.session.venta;
   console.log(venta);
-  res.render("CheckerDashboard", { venta: venta,cajeroDatos: cajeroDatos});
+  res.render("CheckerDashboard", { venta: venta, cajeroDatos: cajeroDatos });
 };
 
 const TocheckerGenerate = async (req, res) => {
@@ -708,19 +744,18 @@ const TocheckerGenerate = async (req, res) => {
       WHERE ventas.codventa = $1;`,
       [id]
     );
-    console.log(boletaQueryResult.rows,"datos")
+    console.log(boletaQueryResult.rows, "datos");
     res.json(boletaQueryResult.rows);
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error); // Imprime el error en la consola para el análisis
     res.status(500).json({ error: "Error al generar la boleta" });
   }
-}
+};
 
 const TocheckerGenerate1 = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id, "codigo de ventas")
+    console.log(id, "codigo de ventas");
     const boletaQueryResult = await pool.query(
       `SELECT pedido_mesas.platillo, pedido_mesas.cantidad, 
       pedido_mesas.precio, ventas.codventa, ventas.fechayhora, ventas.tipoventa, 
@@ -733,73 +768,104 @@ const TocheckerGenerate1 = async (req, res) => {
       ;`,
       [id]
     );
-    console.log(boletaQueryResult.rows,"datos1")
+    console.log(boletaQueryResult.rows, "datos1");
     res.json(boletaQueryResult.rows);
-  }
-  catch (error) {
+  } catch (error) {
     console.error(error); // Imprime el error en la consola para el análisis
     res.status(500).json({ error: "Error al generar la boleta" });
   }
-}
+};
 
 let userupdate = null;
 const postcheckerGenerate = async (req, res) => {
   try {
-    const { id, dni, nombre, apellidos, telefono, direccion, codventa,fechaHoraActual } = req.body;
-    
-    if (id === '2') {
+    const {
+      id,
+      dni,
+      nombre,
+      apellidos,
+      telefono,
+      direccion,
+      codventa,
+      fechaHoraActual,
+    } = req.body;
+
+    if (id === "2") {
       userupdate = await pool.connect();
-      await userupdate.query('BEGIN'); // Iniciar transacción
-      console.log(id, dni, nombre, apellidos, telefono, direccion, codventa,fechaHoraActual)
+      await userupdate.query("BEGIN"); // Iniciar transacción
+      console.log(
+        id,
+        dni,
+        nombre,
+        apellidos,
+        telefono,
+        direccion,
+        codventa,
+        fechaHoraActual
+      );
       // Actualizar estado en tabla usuarios
-      await userupdate.query(`
+      await userupdate.query(
+        `
       UPDATE usuarios SET dni=$1, nombres=$2, apellidos=$3, celular=$4, direccion=$5 WHERE codusuario=$6;
-    `, [dni, nombre, apellidos, telefono, direccion, id]
+    `,
+        [dni, nombre, apellidos, telefono, direccion, id]
       );
 
       // Actualizar estado en tabla detalle_ventas
-      await userupdate.query(`
+      await userupdate.query(
+        `
       UPDATE detalle_ventas
       SET estado = '4'
       WHERE codventa= $1;
-    `, [codventa]);
+    `,
+        [codventa]
+      );
 
       // Actualizar estado en tabla ventas
-      await userupdate.query(`
+      await userupdate.query(
+        `
       UPDATE ventas
       SET estado = '4', fechayhora= $1
       WHERE codventa=$2;
-      `, [fechaHoraActual, codventa]);
+      `,
+        [fechaHoraActual, codventa]
+      );
     }
-    if (id === '1') {
+    if (id === "1") {
       userupdate = await pool.connect();
-      await userupdate.query('BEGIN'); // Iniciar transacción
-      console.log(id, dni, nombre, apellidos, telefono, direccion, codventa)
+      await userupdate.query("BEGIN"); // Iniciar transacción
+      console.log(id, dni, nombre, apellidos, telefono, direccion, codventa);
       // Actualizar estado en tabla usuarios
       const usuarioInsertResult = await pool.query(
         `INSERT INTO usuarios (nombres,apellidos, celular, direccion,dni,codperfil,estado) VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING codusuario`,
-        [nombre, apellidos, telefono, direccion, dni,'5', '1']
+        [nombre, apellidos, telefono, direccion, dni, "5", "1"]
       );
 
       // Actualizar estado en tabla detalle_ventas
-      await userupdate.query(`
+      await userupdate.query(
+        `
       UPDATE pedido_mesas
       SET estado = '4'
       WHERE codventa= $1;
-    `, [codventa]);
+    `,
+        [codventa]
+      );
 
       // Actualizar estado en tabla ventas
-      await userupdate.query(`
+      await userupdate.query(
+        `
       UPDATE ventas
       SET estado = '4',fechayhora= $1
       WHERE codventa=$2;
-      `, [fechaHoraActual,codventa]);
+      `,
+        [fechaHoraActual, codventa]
+      );
     }
-    await userupdate.query('COMMIT');
-    console.log('Actualización exitosa');
+    await userupdate.query("COMMIT");
+    console.log("Actualización exitosa");
     res.status(201).json(userupdate.rows); // Devuelve el nuevo proveedor como respuesta
   } catch (error) {
-    await userupdate.query('ROLLBACK')
+    await userupdate.query("ROLLBACK");
     console.log(error);
     return res.status(500).json({
       message: "Error al obtener los perfiles",
@@ -813,18 +879,22 @@ const getCheckerLlevar = async (req, res) => {
   let cajeroDatos;
   console.log(req.session.pedido_llevar, "del session");
   let userId = globals.getUserId();
-  
-  const userQueryResult = await pool.query(`SELECT nombres, apellidos, correo, dni from usuarios
+
+  const userQueryResult = await pool.query(
+    `SELECT nombres, apellidos, correo, dni from usuarios
   where codusuario= $1;`,
     [userId]
   );
   cajeroDatos = userQueryResult.rows[0];
   console.log(cajeroDatos);
   pedido_llevar = req.session.pedido_llevar;
-  
-  console.log(pedido_llevar,"enviado a la vista")
-  res.render("CheckerVentasLlevar", {pedido_llevar,cajeroDatos: cajeroDatos});
-}
+
+  console.log(pedido_llevar, "enviado a la vista");
+  res.render("CheckerVentasLlevar", {
+    pedido_llevar,
+    cajeroDatos: cajeroDatos,
+  });
+};
 
 let pedidos = null;
 const Cooker = async (req, res) => {
@@ -848,16 +918,16 @@ const Cooker = async (req, res) => {
       JOIN ventas ON detalle_ventas.codventa = ventas.codventa
       WHERE detalle_ventas.estado = '2'
       Group by detalle_ventas.codventa, detalle_ventas.codplatillo, detalle_ventas.cantidad, detalle_ventas.estado, menues.nombre, menues.precio, ventas.tipoventa, detalle_ventas.estadonuevo
-      ORDER BY detalle_ventas.codventa`,
+      ORDER BY detalle_ventas.codventa`
   );
   req.session.pedidos = userQueryResult.rows;
   pedidos = req.session.pedidos;
-  res.render("CookerDashboard", { pedidos,pedido_mesas });
+  res.render("CookerDashboard", { pedidos, pedido_mesas });
 };
 
 const CookerUpdate = async (req, res) => {
   const { codventa } = req.params;
-  console.log( codventa, "web");
+  console.log(codventa, "web");
   await pool.query(
     `UPDATE detalle_ventas
      SET estado = $1
@@ -875,7 +945,7 @@ const CookerUpdate = async (req, res) => {
 
 const CookerUpdateMesas = async (req, res) => {
   const { codventa } = req.params;
-  console.log(codventa, "mesas")
+  console.log(codventa, "mesas");
   await pool.query(
     `UPDATE pedido_mesas
      SET estado = $1
@@ -888,7 +958,7 @@ const CookerUpdateMesas = async (req, res) => {
      WHERE codventa = $2`,
     ["2", codventa]
   );
-}
+};
 
 const Tohome = (req, res) => {
   console.log(req.isAuthenticated());
@@ -916,11 +986,12 @@ const Tocorreo = async (req, res) => {
     `SELECT nombres, apellidos, direccion, celular, dni
      FROM usuarios
      WHERE codusuario = $1`,
-     [userId]
+    [userId]
   );
   req.session.usuarios = userQueryResult.rows[0];
   usuario = req.session.usuarios;
-  res.render("profile", { correo, user: req.user.correo,usuario });
+  console.log(usuario, "estes es del req.session usuario");
+  res.render("profile", { correo, user: req.user.correo, usuario });
 };
 
 const Post_correo = async (req, res) => {
@@ -1073,13 +1144,13 @@ const CreateNewVenta = async (req, res) => {
   const datosVentaRespuesta = req.body;
   console.log("cantidad y precio en el create: ", datosVentaRespuesta);
   req.session.productos = datosVentaRespuesta;
-  productos1 = req.session.productos ||[];
+  productos1 = req.session.productos || [];
   const userId = globals.getUserId();
   const userQueryResult = await pool.query(
     `SELECT nombres, apellidos, direccion, celular, dni
      FROM usuarios
      WHERE codusuario = $1`,
-     [userId]
+    [userId]
   );
   req.session.usuarios = userQueryResult.rows[0];
   usuario = req.session.usuarios;
@@ -1087,11 +1158,16 @@ const CreateNewVenta = async (req, res) => {
   res.redirect("/user/carroComprado");
 };
 
-const NewCar = (req, res) =>{
+const NewCar = (req, res) => {
   const usuarioEstaLogueado = req.isAuthenticated();
   const total = req.session.total;
-  console.log(productos1,"carro en el newcar")
-  res.render("carroComprado",{productos1, usuario,usuarioEstaLogueado,total});
+  console.log(productos1, "carro en el newcar");
+  res.render("carroComprado", {
+    productos1,
+    usuario,
+    usuarioEstaLogueado,
+    total,
+  });
 };
 
 const BuyCar = async (req, res) => {
@@ -1113,14 +1189,14 @@ const BuyCar = async (req, res) => {
     const codventa = ventaInsertResult.rows[0].codventa;
     for (const producto of productosEnCarrito1) {
       const { nombre, cantidad, precio } = producto;
-      let id=null;
+      let id = null;
       console.log(nombre, cantidad, precio);
-      total = total + (precio * cantidad);
+      total = total + precio * cantidad;
       const codplatilloSelectResult = await pool.query(
         `Select codplatillo from menues where nombre=$1`,
         [nombre]
-      )
-      id=codplatilloSelectResult.rows[0].codplatillo;
+      );
+      id = codplatilloSelectResult.rows[0].codplatillo;
       console.log(id);
       await pool.query(
         `INSERT INTO detalle_ventas (codventa,codplatillo, cantidad, precio,estado) 
@@ -1128,10 +1204,10 @@ const BuyCar = async (req, res) => {
         [codventa, id, cantidad, precio, "2"]
       );
     }
-    await pool.query(
-      `UPDATE ventas SET preciototal = $1 WHERE codventa = $2`,
-      [total, codventa]
-    );
+    await pool.query(`UPDATE ventas SET preciototal = $1 WHERE codventa = $2`, [
+      total,
+      codventa,
+    ]);
     console.log(total);
     await pool.query("COMMIT");
     req.session.total = total;
@@ -1143,14 +1219,23 @@ const BuyCar = async (req, res) => {
     req.flash("error_msg", err.message);
     res.status(400).send({ message: err.message });
   }
-}
+};
 
 const GetUser = (req, res) => {
   res.render("login", { messages: req.flash() });
 };
 
 const CreateNewUser = async (req, res) => {
-  let { nombres, apellidos, dni, celular, direccion, correo, contraseña, contraseña2 } = req.body;
+  let {
+    nombres,
+    apellidos,
+    dni,
+    celular,
+    direccion,
+    correo,
+    contraseña,
+    contraseña2,
+  } = req.body;
 
   let errors = [];
 
@@ -1164,7 +1249,16 @@ const CreateNewUser = async (req, res) => {
     contraseña,
     contraseña2,
   });
-  if (!nombres || !correo || !apellidos || !dni || !direccion || !celular || !contraseña || !contraseña2) {
+  if (
+    !nombres ||
+    !correo ||
+    !apellidos ||
+    !dni ||
+    !direccion ||
+    !celular ||
+    !contraseña ||
+    !contraseña2
+  ) {
     errors.push({ message: "Por favor ingrese todos los campos" });
   }
 
@@ -1192,50 +1286,54 @@ const CreateNewUser = async (req, res) => {
     try {
       let hashedPassword = await bcrypt.hash(contraseña, 10);
       console.log(hashedPassword);
-      
+
       const correoQuery = await pool.query(
         `SELECT * FROM usuarios WHERE correo = $1`,
         [correo]
       );
-      
+
       console.log(correoQuery.rows);
-      
+
       if (correoQuery.rows.length > 0) {
         errors.push({ message: "Correo ya registrado" });
         res.render("login", { errors });
         return;
       }
-      
+
       const dniQuery = await pool.query(
         `SELECT * FROM usuarios WHERE dni = $1`,
         [dni]
       );
-      
+
       console.log(dniQuery.rows);
-      
+
       if (dniQuery.rows.length > 0) {
         errors.push({ message: "DNI ya registrado" });
         res.render("login", { errors });
         return;
       }
-      
+
       const insertQuery = await pool.query(
         `INSERT INTO usuarios (nombres, apellidos, dni, celular, direccion, correo, contraseña, codperfil, estado) VALUES ($1, $2, $3, $4, $5, $6, $7, 5, '1') 
         RETURNING codusuario, contraseña`,
         [nombres, apellidos, dni, celular, direccion, correo, hashedPassword]
       );
-      
+
       console.log(insertQuery.rows);
-      
-      req.flash("success_msg", "Ahora estás registrado. Por favor inicia sesión");
+
+      req.flash(
+        "success_msg",
+        "Ahora estás registrado. Por favor inicia sesión"
+      );
       res.redirect("/user/login");
     } catch (err) {
       console.log(err);
-      res.render("login", { errors: [{ message: "Ocurrió un error al registrar el usuario" }] });
+      res.render("login", {
+        errors: [{ message: "Ocurrió un error al registrar el usuario" }],
+      });
     }
   }
 };
-
 
 const checkAuthenticated = function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
