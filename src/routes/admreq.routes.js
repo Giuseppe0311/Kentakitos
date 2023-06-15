@@ -3,7 +3,7 @@ const router = express.Router();
 const { s3, getImageStream } = require("../services/awts3.js");
 
 const AdmReq = require("../controllers/Adminrequierementes.js/AdmReq.js");
-//RUTA PARA AMZAON
+//RUTA PARA AMAZON
 router.get("/subida/:imageKey", async (req, res) => {
   const imageKey = req.params.imageKey;
   const imageStream = await getImageStream(imageKey);
@@ -73,5 +73,9 @@ router.patch("/menu", AdmReq.patchmenubyid);
 router.get("/deletemenu/:id", AdmReq.deletMenu);
 router.get("/publicarmenu/:id", AdmReq.publicarMenu);
 router.get("/quitarpublimenu/:id", AdmReq.quitarpubliMenu);
+//RUTAS PARA LOS REPORTES-GRAFICOS
+router.get("/dashboard", (req, res) => {
+  res.render("reportes");
+});
 
 module.exports = router;

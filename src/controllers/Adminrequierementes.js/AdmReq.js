@@ -86,7 +86,7 @@ const postUserRegister = async (req, res) => {
     direccion,
     codperfil,
   } = req.body;
-  let hashedPassword = await bcrypt.hash(contraseña1, 10);
+  let hashedPassword = await bcryptjs.hash(contraseña1, 10);
   const result1 = await pool.query("SELECT *FROM usuarios where correo = $1", [
     correo,
   ]);
@@ -702,6 +702,8 @@ const quitarpubliMenu = async (req, res) => {
   );
   res.redirect("/menues");
 };
+//COTROLADOR PARA REPORTES-GRAFICOS
+
 module.exports = {
   getMarcas,
   getmenu,

@@ -156,8 +156,16 @@
                     id="dni"
                     name="dni"
                     aria-describedby="addon-wrapping"
+                    required
                   />
                   <a  id="btndni" class="btn btn-outline-primary"><i class="fa-solid fa-magnifying-glass"></i></a>
+                </div>
+                <div class="spinner-container" id="loader" style="display: none;">
+                  <div class="d-flex justify-content-center align-items-center">
+                    <div class="spinner-grow text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping"
@@ -169,7 +177,8 @@
                     name="nombres"
                     id="nombres"
                     aria-describedby="addon-wrapping"
-                    disabled
+                    readonly
+                    required
                   />
                 </div>
                 <div class="input-group flex-nowrap">
@@ -181,7 +190,8 @@
                     class="form-control"
                     name="apellidos"
                     id="apellidos"
-                    disabled
+                    readonly
+                    required
                     aria-describedby="addon-wrapping"
                   />
                 </div>
@@ -194,6 +204,7 @@
                     class="form-control"
                     name="numcelular"
                     aria-describedby="addon-wrapping"
+
                   />
                 </div>
                 <div class="input-group flex-nowrap">
@@ -216,6 +227,7 @@
                     class="form-control"
                     aria-describedby="addon-wrapping"
                     name="correo"
+                    required
                   />
                 </div>
                 <div class="input-group flex-nowrap">
@@ -227,6 +239,7 @@
                     class="form-control"
                     aria-describedby="addon-wrapping"
                     name="contraseña1"
+                    required
                   />
                 </div>
                 <!-- //make a combobox -->
@@ -249,7 +262,7 @@
                     <% } %>
                   </select>
                 </div>
-                <button  id="btnEnviar" class="btn btn-primary">ENVIAR</button>
+                <button  id="btnEnviar" type="submit" class="btn btn-primary">ENVIAR</button>
 
               </div>
 
@@ -265,56 +278,45 @@
       crossorigin="anonymous"
     >
   </script>
- <% if (emailExists==true) { %>
-  <script>
-    Swal.fire(
-      'Correo Existente',
-      'El correo electrónico ya existe en nuestro sistema',
-      'info'
-    )
-  </script>
-<% } %>
-<% if (exist==true) { %>
-  <script>
-    Swal.fire(
-      'Contraseña Invalida',
-      'La contraseña debe tener almenos 6 caracteres',
-      'warning'
-    )
-  </script>
-<% } %>
-<% if (sucess==true) { %>
-  <script>
-    Swal.fire(
-      'Usuario Guardado',
-      'Usuario guardado Satisfactoriamente',
-      'success'
-    )
-  </script>
-<% } %>
-<% if (error==true) { %>
-  <script>
-    Swal.fire(
-      'Error Inesperado',
-      'error'
-    )
-  </script>
-<% } %>
-
-<script>
-  document.getElementById('btnEnviar').addEventListener('click', function(event) {
-    // Evitar que el formulario se envíe automáticamente
-    event.preventDefault();
-    // Habilitar los campos antes de enviar el formulario
-    document.getElementById('nombres').removeAttribute('disabled');
-    document.getElementById('apellidos').removeAttribute('disabled');
-    // Enviar el formulario
-    document.getElementById('myForm').submit();
-  });
-</script>
-
+  <% if (emailExists==true) { %>
+    <script>
+      Swal.fire(
+        'Correo Existente',
+        'El correo electrónico ya existe en nuestro sistema',
+        'info'
+      )
+    </script>
+  <% } %>
+  <% if (exist==true) { %>
+    <script>
+      Swal.fire(
+        'Contraseña Invalida',
+        'La contraseña debe tener almenos 6 caracteres',
+        'warning'
+      )
+    </script>
+  <% } %>
+  <% if (sucess==true) { %>
+    <script>
+      Swal.fire(
+        'Usuario Guardado',
+        'Usuario guardado Satisfactoriamente',
+        'success'
+      )
+    </script>
+  <% } %>
+  <% if (error==true) { %>
+    <script>
+      Swal.fire(
+        'Error Inesperado',
+        'error'
+      )
+    </script>
+  <% } %>
 <script>
   document.getElementById('btndni').addEventListener('click', async (event) => {
+      event.preventDefault();
+      document.getElementById('loader').style.display = 'block';
       const dni = document.getElementById('dni').value;
       const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImJhcnJlcml0YV9yb21lcm9AaG90bWFpbC5jb20ifQ.5sH-f-HlBuJvJNaNE6PXpa62-BqUnsofT0fZHxdOUPU';
       const url = `https://dniruc.apisperu.com/api/v1/dni/${dni}?token=${token}`;
@@ -342,6 +344,7 @@
         document.getElementById('mensajeRucNoEncontrado').innerHTML = "<p style='color: red; font-weight: bold; margin-top: 10px;'>DNI no valido</p>";
         // Manejar el error de acuerdo a tus necesidades
       }
+      document.getElementById('loader').style.display = 'none';
     });
 </script>
 

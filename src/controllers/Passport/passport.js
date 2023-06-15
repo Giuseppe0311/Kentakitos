@@ -6,37 +6,37 @@ const globals = require("./globals.js");
 function initialize(passport) {
   console.log("Initialized");
 
-  const authenticateUser = (correo, contraseña, done) => {
+  const authenticateUser = async (correo, contraseña, done) => {
     console.log(correo, contraseña);
-    pool.query(
-      `SELECT * FROM usuarios WHERE correo = $1`,
-      [correo],
-      (err, results) => {
-        if (err) {
+
+    try {
+      const results = await pool.query(
+        `SELECT * FROM usuarios WHERE correo = $1`,
+        [correo]
+      );
+      console.log(results.rows);
+
+      if (results.rows.length > 0) {
+        const user = results.rows[0];
+
+        try {
+          const isMatch = await bcryptjs.compare(contraseña, user.contraseña);
+          if (isMatch) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: "Contraseña incorrecta" });
+          }
+        } catch (err) {
           console.log(err);
         }
-        console.log(results.rows);
-
-        if (results.rows.length > 0) {
-          const user = results.rows[0];
-
-          bcryptjs.compare(contraseña, user.contraseña, (err, isMatch) => {
-            if (err) {
-              console.log(err);
-            }
-            if (isMatch) {
-              return done(null, user);
-            } else {
-              return done(null, false, { message: "Contraseña incorrecta" });
-            }
-          });
-        } else {
-          return done(null, false, {
-            message: "No existe usuario registrado con ese correo",
-          });
-        }
+      } else {
+        return done(null, false, {
+          message: "No existe usuario registrado con ese correo",
+        });
       }
-    );
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   passport.use(
