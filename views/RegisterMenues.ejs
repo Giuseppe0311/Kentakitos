@@ -12,6 +12,7 @@
       crossorigin="anonymous"
     />
     <script src="https://kit.fontawesome.com/b1d1afb1da.js" crossorigin="anonymous"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1011.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
   </head>
   <body>
@@ -125,6 +126,7 @@
                       role="button"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
+                      
                     >
                       VENTAS
                     </a>
@@ -149,6 +151,7 @@
                 <span>Registar Menues</span>
                 <a onclick="agregar()" class="btn btn-outline-primary m-4"><i class="fa-solid fa-plus" style="color: #000000;"></i></a>
             </div>
+            
             <div>
                 <table class="table caption-top table-light table-striped" id="mitabla">
                   <div class="position-static">
@@ -161,38 +164,11 @@
                         <th>Imagen</th>
                         <th>Categoria</th>
                         <th class="text-center">Opciones</th>
+                        
                       </tr>
                     </thead>
                   </div>
                   <tbody>
-                    <!-- //make a ejs for each -->
-                    <% datamenu.forEach(function(elemento) { %>
-                        <tr>
-                         <td><%=elemento.codplatillo%></td>
-                          <td><%=elemento.nombre%></td>
-                          <td><%=elemento.precio%></td>
-                          <td><%=elemento.stock%></td>
-                          <td><img src="assets/uploads/<%= elemento.img %>" alt="" width="50px"></td>
-                          <td><%=elemento.categoria%></td>
-                          <td>
-                            <% if (elemento.estado !== "2") { %>
-                            <div class="container d-flex gap-2 justify-content-center">
-                         <a onclick="editar(<%= elemento.codplatillo %>)" class="btn btn-outline-info">editar</a>
-                         <a onclick="eliminar(<%= elemento.codplatillo %>)" class="btn btn-outline-danger">borrar</a>
-                         <a onclick="publicar(<%= elemento.codplatillo %>)" class="btn btn-outline-danger">Publicar</a>
-                        </div>
-                        <% } else { %>
-                          <div class="container d-flex gap-2 justify-content-center">
-                            <a onclick="editar(<%= elemento.codplatillo %>)" class="btn btn-outline-info">editar</a>
-                            <a onclick="eliminar(<%= elemento.codplatillo %>)" class="btn btn-outline-danger">borrar</a>
-                            <a onclick="unpublish(<%= elemento.codplatillo %>)" class="btn btn-outline-danger">Dejar de Publicar</a>
-                           </div>
-                          <% } %>
-                        </td>
-                       
-                        </tr>
-                        <% }); %>
-                  
                   </tbody>
                 </table>
               </div>
@@ -210,6 +186,48 @@
       crossorigin="anonymous"
     >
   </script>
+ <script>
+ async function mostrarmenues() {
+    const response =await axios.get("/allmenues")
+    productosSeleccionados=response.data
+const tabla = document.getElementById("mitabla");
+const tbody = tabla.querySelector("tbody");
+
+// Vaciar el contenido de la tabla
+tbody.innerHTML = "";
+totalCompra = 0;
+// Recorrer el array de productos seleccionados y agregar filas a la tabla
+productosSeleccionados.forEach((producto, index) => {
+  const fila = document.createElement("tr");
+  fila.innerHTML = `
+    <td>${producto.codplatillo}</td>
+    <td>${producto.nombre}</td>
+    <td>${producto.precio}</td>
+    <td>${producto.stock}</td>
+    <td><img width="80px" src="/subida/${producto.img}" alt="image"></td>
+    <td>${producto.categoria}</td>
+    <td>
+      <div class="container d-flex gap-2 justify-content-center">
+        ${producto.estado !== "2" ? `
+        
+          <a onclick="editar(${producto.codplatillo})" class="btn btn-outline-info">editar</a>
+          <a onclick="eliminar(${producto.codplatillo})" class="btn btn-outline-danger">borrar</a>
+          <a onclick="publicar(${producto.codplatillo})" class="btn btn-outline-danger">Publicar</a>
+        </div>
+        ` : `
+          <a onclick="editar(${producto.codplatillo})" class="btn btn-outline-info">editar</a>
+          <a onclick="eliminar(${producto.codplatillo})" class="btn btn-outline-danger">borrar</a>
+          <a onclick="unpublish(${producto.codplatillo})" class="btn btn-outline-danger" style="white-space: nowrap;">No Publicar</a>
+        </div>
+        `}
+    </td>
+  `;
+  tbody.appendChild(fila);
+});
+
+}
+mostrarmenues()
+</script>
   <!-- SCRIPT PARA AGREGAR MENUES -->
   <script>
     async function agregar() {
@@ -244,7 +262,7 @@
   <label class="input-group-text" for="image">Imagen del Menu</label>
   <input type="file" class="form-control" id="image" name="image" required>
 </div>
-
+<div id="spinner-container"></div>
 <br/>
 <button type="submit" class="submit" style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" id="registrarBoton">Registrar</button>
 <a href="#" class="cancel" style="background-color: #d33; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer; margin-left: 10px;" id="cancelarBoton">Cancelar</a>
@@ -253,18 +271,33 @@
       });
       document.getElementById('agregarMenu').addEventListener('submit', async (event) => {
     event.preventDefault(); // Evitar que el formulario se envíe de inmediato
+    document.getElementById('registrarBoton').disabled = true;
+     
        const formData = new FormData(event.target);
-    try {
-        // Enviar el     formulario manualmente
-        const response = await axios.post('/menues',formData);
-        console.log(response)
-        Swal.fire('Registrado!', '', 'success');
-        setTimeout(function () {
-            location.reload();
-        }, 1000);
-    } catch (error) {
-        Swal.fire('Error', 'Ha ocurrido un error al enviar el formulario', 'error');
-    }
+       try {
+  // Insertar el spinner antes de la solicitud
+  const spinnerContainer = document.getElementById('spinner-container');
+  spinnerContainer.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+
+  // Enviar el formulario manualmente
+  const response = await axios.post('/menues', formData);
+  console.log(response);
+
+  // Remover el spinner
+  spinnerContainer.innerHTML = '';
+
+  // Mostrar el mensaje Swal
+  Swal.fire('Registrado!', '', 'success');
+  setTimeout(function () {
+    location.reload();
+  }, 1000);
+} catch (error) {
+  // Remover el spinner
+  spinnerContainer.innerHTML = '';
+  document.getElementById('registrarBoton').disabled = false;
+  // Mostrar el mensaje Swal de error
+  Swal.fire('Error', 'Ha ocurrido un error al enviar el formulario', 'error');
+}
 });
 
     document.getElementById('cancelarBoton').addEventListener('click', () => {
@@ -313,25 +346,32 @@
   <label class="input-group-text" for="image">Imagen del Menu</label>
   <input type="file" class="form-control" id="image" name="image">
 </div>
+<div id="spinner-container1"></div>
 <br/>
-<button type="submit" class="submit" style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" id="registrarBoton">Registrar</button>
+<button type="submit" class="submit" style="background-color: #4CAF50; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" id="registrarBoton1">Registrar</button>
 <a href="#" class="cancel" style="background-color: #d33; border: none; color: white; padding: 10px 24px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer; margin-left: 10px;" id="cancelarBoton">Cancelar</a>
-
   </form>`,
     });
      // Agregar listener de evento para el botón "Registrar"
      document.getElementById('agregarMenu').addEventListener('submit', async (event) => {
   event.preventDefault(); // Evitar que el formulario se envíe de inmediato
+  document.getElementById('registrarBoton1').disabled = true;
   const formData = new FormData(event.target);
   try {
+      // Insertar el spinner antes de la solicitud
+      const spinnerContainer = document.getElementById('spinner-container1');
+      spinnerContainer.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';    
       // Enviar el formulario manualmente
       const response = await axios.patch('/menu',formData);
       console.log(response)
+      spinnerContainer.innerHTML = '';
       Swal.fire('Modificado!', '', 'success');
       setTimeout(function () {
           location.reload();
       }, 1000);
   } catch (error) {
+    spinnerContainer.innerHTML = '';
+    document.getElementById('registrarBoton1').disabled = false;
       Swal.fire('Error', 'Ha ocurrido un error al enviar el formulario', 'error');
   }
 });   
