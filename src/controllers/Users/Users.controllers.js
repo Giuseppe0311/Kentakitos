@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt");
-const { pool } = require("../../dbConfig.js");
+const bcryptjs = require("bcryptjs");
+const { pool } = require("../../db/postgresdb.js");
 const globals = require("../Passport/globals.js");
 const { json } = require("express");
 const Swal = require("sweetalert2");
@@ -142,6 +142,7 @@ const Tologout = (req, res) => {
 
 const ToCart = function (req, res) {
   const usuarioEstaLogueado = req.isAuthenticated();
+  console.log(usuarioEstaLogueado, "mensaje si esta logeado");
   res.render("carro", { usuarioEstaLogueado });
 };
 const thanks = function (req, res) {
@@ -1050,7 +1051,7 @@ const CreateNewPassword = async (req, res) => {
       contraseña2,
     });
   } else {
-    let hashedPassword = await bcrypt.hash(contraseña, 10);
+    let hashedPassword = await bcryptjs.hash(contraseña, 10);
     console.log(hashedPassword);
 
     pool.query(
@@ -1154,14 +1155,13 @@ const CreateNewVenta = async (req, res) => {
   );
   req.session.usuarios = userQueryResult.rows[0];
   usuario = req.session.usuarios;
-  console.log(usuario);
   res.redirect("/user/carroComprado");
 };
 
 const NewCar = (req, res) => {
   const usuarioEstaLogueado = req.isAuthenticated();
   const total = req.session.total;
-  console.log(productos1, "carro en el newcar");
+  console.log(usuario, "carro en el newcar");
   res.render("carroComprado", {
     productos1,
     usuario,
@@ -1284,7 +1284,7 @@ const CreateNewUser = async (req, res) => {
     });
   } else {
     try {
-      let hashedPassword = await bcrypt.hash(contraseña, 10);
+      let hashedPassword = await bcryptjs.hash(contraseña, 10);
       console.log(hashedPassword);
 
       const correoQuery = await pool.query(

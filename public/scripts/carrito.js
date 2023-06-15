@@ -1,8 +1,8 @@
 let productosEnCarrito = localStorage.getItem("productos-en-carrito");
-console.log(productosEnCarrito,"en el script al inicio")
+console.log(productosEnCarrito, "en el script al inicio");
 console.log(productosEnCarrito);
 productosEnCarrito = JSON.parse(productosEnCarrito);
-console.log(productosEnCarrito,"en el script al inicio despues con json")
+console.log(productosEnCarrito, "en el script al inicio despues con json");
 
 const contenedorCarritoVacio = document.querySelector("#carrito-vacio");
 const contenedorCarritoProductos = document.querySelector("#carrito-productos");
@@ -19,14 +19,13 @@ function cargarProductosCarrito() {
     contenedorCarritoProductos.classList.remove("disabled");
     contenedorCarritoAcciones.classList.remove("disabled");
     contenedorCarritoComprado.classList.add("disabled");
-
     contenedorCarritoProductos.innerHTML = "";
 
     productosEnCarrito.forEach((producto) => {
       const div = document.createElement("div");
       div.classList.add("carrito-producto");
       div.innerHTML = `
-                <img class="carrito-producto-imagen" src="/assets/uploads/${
+                <img class="carrito-producto-imagen" src="/subida/${
                   producto.img
                 }" >
                 <div class="carrito-producto-titulo">
@@ -105,7 +104,6 @@ function eliminarDelCarrito(e) {
   localStorage.setItem(
     "productos-en-carrito",
     JSON.stringify(productosEnCarrito)
-    
   );
 }
 
@@ -146,13 +144,14 @@ function actualizarTotal() {
 botonComprar.addEventListener("click", comprarCarrito);
 
 function comprarCarrito() {
-  const productosEnCarrito = JSON.parse(localStorage.getItem("productos-en-carrito")) || [];
+  const productosEnCarrito =
+    JSON.parse(localStorage.getItem("productos-en-carrito")) || [];
 
   // Creamos una nueva variable para guardar solo los datos que necesitamos
   const datosVenta = productosEnCarrito.map((producto) => {
     return {
-      nombre:producto.nombre,
-      img:producto.img,
+      nombre: producto.nombre,
+      img: producto.img,
       cantidad: producto.cantidad,
       precio: producto.precio,
     };
@@ -162,7 +161,7 @@ function comprarCarrito() {
     "productos-en-carrito",
     JSON.stringify(productosEnCarrito)
   );
-  
+
   fetch("/user/venta", {
     method: "POST",
     headers: {
@@ -181,11 +180,10 @@ function comprarCarrito() {
     })
     .catch((error) => {
       console.error("Ha ocurrido un error al realizar la venta", error);
-    }); 
-  
+    });
+
   contenedorCarritoVacio.classList.add("disabled");
   contenedorCarritoProductos.classList.add("disabled");
   contenedorCarritoAcciones.classList.add("disabled");
   contenedorCarritoComprado.classList.remove("disabled");
-  
 }

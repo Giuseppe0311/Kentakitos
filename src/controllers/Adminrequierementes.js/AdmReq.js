@@ -1,5 +1,5 @@
-const { pool } = require("../../dbConfig");
-const bcrypt = require("bcrypt");
+const { pool } = require("../../db/postgresdb");
+const bcryptjs = require("bcryptjs");
 const { json, response } = require("express");
 const Swal = require("sweetalert2");
 //CONTROLADORES CRUD

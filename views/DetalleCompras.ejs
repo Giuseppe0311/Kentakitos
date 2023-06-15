@@ -180,7 +180,7 @@
                           <td><%=elemento.numerodocumento%></td>
                           <td><%=elemento.tipo_pago%></td>
                           <td>
-                            <img src="/assets/uploads/<%= elemento.img %>" alt="" width="100px" onclick="abrirModal('/assets/uploads/<%= elemento.img %>')" title="Haz clic para ampliar" style="cursor: pointer;">
+                            <img src="/uploads/<%= elemento.img %>" alt="" width="100px" onclick="abrirModal('/uploads/<%= elemento.img %>')" title="Haz clic para ampliar" style="cursor: pointer;">
                           </td>
                           <td><%=elemento.estadopago%></td>
                           
@@ -655,7 +655,7 @@ flatpickr("#fecha", {
       fila.innerHTML = `
       <td>${formatofecha(pago.fecha_pago)}</td>
       <td>
-        <img src="/assets/uploads/${pago.imagen_comprobante}" alt="" width="80px" onclick="abrirModal('/assets/uploads/${pago.imagen_comprobante}')" title="Haz clic para ampliar" style="cursor: pointer;">
+        <img src="/uploads/${pago.imagen_comprobante}" alt="" width="80px" onclick="abrirModal('/uploads/${pago.imagen_comprobante}')" title="Haz clic para ampliar" style="cursor: pointer;">
   
       </td>
       <td>

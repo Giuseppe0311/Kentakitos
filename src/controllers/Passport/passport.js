@@ -1,7 +1,7 @@
 const LocalStrategy = require("passport-local").Strategy;
-const bcrypt = require("bcrypt");
-const { pool } = require("../../dbConfig.js");
-const globals = require('./globals.js');
+const bcryptjs = require("bcryptjs");
+const { pool } = require("../../db/postgresdb.js");
+const globals = require("./globals.js");
 
 function initialize(passport) {
   console.log("Initialized");
@@ -20,7 +20,7 @@ function initialize(passport) {
         if (results.rows.length > 0) {
           const user = results.rows[0];
 
-          bcrypt.compare(contraseña, user.contraseña, (err, isMatch) => {
+          bcryptjs.compare(contraseña, user.contraseña, (err, isMatch) => {
             if (err) {
               console.log(err);
             }

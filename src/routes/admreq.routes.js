@@ -1,6 +1,14 @@
 const express = require("express");
 const router = express.Router();
+const { s3, getImageStream } = require("../services/awts3.js");
+
 const AdmReq = require("../controllers/Adminrequierementes.js/AdmReq.js");
+//RUTA PARA AMZAON
+router.get("/subida/:imageKey", async (req, res) => {
+  const imageKey = req.params.imageKey;
+  const imageStream = await getImageStream(imageKey);
+  imageStream.pipe(res);
+});
 //CRUD
 router.get("/delete/:id", AdmReq.deleteuser);
 router.get("/edit/:id", AdmReq.getuserbyid);

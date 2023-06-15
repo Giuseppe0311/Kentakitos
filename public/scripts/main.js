@@ -1,16 +1,7 @@
-let productos = [];
-// fetch("/assets/scripts/productos.json")
-//   .then((response) => response.json())
-//   .then((data) => {
-//     productos = data;
-//     cargarProductos(productos);
-//   });
-var datamenu;
 async function iniciar() {
   try {
     const response = await axios.get("/allmenues");
     datamenu = await response.data;
-    console.log(datamenu)
     cargarProductos(datamenu);
   } catch (error) {
     console.log("Ocurrió un error al obtener los productos:", error);
@@ -36,8 +27,9 @@ function cargarProductos(productosElegidos) {
     if (producto.estado === "2") {
       const div = document.createElement("div");
       div.classList.add("producto");
+      // div.style.maxWidth = "350px"; // Establece el ancho del div en 350px
       div.innerHTML = `
-            <img class="producto-imagen" src="/assets/uploads/${producto.img}">
+            <img class="producto-imagen" src="/subida/${producto.img}">
             <div class="producto-detalles">
                 <h3 class="producto-titulo">${producto.nombre}</h3>
                 <p class="producto-precio">S/.${producto.precio}</p>

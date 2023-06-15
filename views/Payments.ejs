@@ -178,7 +178,7 @@
                           <td><%=elemento.tipo_pago%></td>
                           <td><%=formatoFecha(elemento.fechapago)%></td>
                           <td>
-                            <img src="/assets/uploads/<%= elemento.comprobante %>" alt="" width="100px" onclick="abrirModal('/assets/uploads/<%= elemento.comprobante%>')" title="Haz clic para ampliar" style="cursor: pointer;">
+                            <img src="/uploads/<%= elemento.comprobante %>" alt="" width="100px" onclick="abrirModal('/uploads/<%= elemento.comprobante%>')" title="Haz clic para ampliar" style="cursor: pointer;">
                         </td>
                         </tr>
                         <% }); %>
