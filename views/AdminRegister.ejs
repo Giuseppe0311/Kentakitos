@@ -146,7 +146,7 @@
             <h1 class="display-5 fw-normal text-center">Registar Usuarios</h1>
             <hr />
             <div class="text-center" id="mensajeRucNoEncontrado"></div>
-            <form id="myForm" action="" method="post">
+            <form id="myForm" action="/user/admin/register" method="post">
               <div class="container d-flex flex-column gap-3 col-6">
                 <div class="input-group flex-nowrap">
                   <span class="input-group-text" id="addon-wrapping">Dni</span>
@@ -262,10 +262,15 @@
                     <% } %>
                   </select>
                 </div>
-                <button  id="btnEnviar" type="submit" class="btn btn-primary">ENVIAR</button>
-
+                <div class="spinner-container" id="loader1" style="display: none;">
+                  <div class="d-flex justify-content-center align-items-center">
+                    <div class="spinner-grow text-primary" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </div>
+                <button  id="btnEnviar" type="submit" class="btn btn-primary">ENVIAR</button>    
               </div>
-
             </form>
           </div>
         </div>
@@ -278,6 +283,37 @@
       crossorigin="anonymous"
     >
   </script>
+    <script>
+      document.getElementById('btnEnviar').addEventListener('click', function(event) {
+        event.preventDefault(); // Evitar que el formulario se envíe automáticamente
+        // Validar el formulario
+        var camposVacios = [];
+  var spans = [];
+  for (var i = 0; i < document.forms[0].elements.length; i++) {
+    if (document.forms[0].elements[i].required && document.forms[0].elements[i].value === '') {
+      camposVacios.push(document.forms[0].elements[i].name);
+      spans.push(document.forms[0].elements[i].parentElement.querySelector('span').textContent);
+    }
+  }
+
+  if (camposVacios.length > 0) {
+    for (var i = 0; i < camposVacios.length; i++) {
+      Swal.fire({
+        title: spans[i],
+        text: 'Este campo es obligatorio.',
+        icon: 'error',
+      });
+    }
+    return;
+  }
+        // Mostrar el loader
+        var loader = document.getElementById('loader1');
+        loader.style.display = 'block';
+    
+        // Enviar el formulario
+        document.getElementById('myForm').submit();
+      });
+    </script>
   <% if (emailExists==true) { %>
     <script>
       Swal.fire(
@@ -313,6 +349,10 @@
       )
     </script>
   <% } %>
+
+
+
+
 <script>
   document.getElementById('btndni').addEventListener('click', async (event) => {
       event.preventDefault();
