@@ -654,10 +654,10 @@ const getmenu = async (req, res) => {
 };
 const postmenu = async (req, res) => {
   const { nombre, precio, stock, categoria } = req.body;
-  const image = req.file;
+  const image = req.files;
   const result = await pool.query(
     "INSERT INTO menues(nombre, precio, stock, img,estado,categoria)VALUES ($1, $2, $3, $4, $5,$6)",
-    [nombre, precio, stock, image.filename, "1", categoria]
+    [nombre, precio, stock, image[0].key, "1", categoria]
   );
   res.json(result.rows[0]);
 };
@@ -670,8 +670,8 @@ const getmenubyid = async (req, res) => {
 };
 const patchmenubyid = async (req, res) => {
   const { id, nombre, precio, stock, categoria } = req.body;
-  const image = req.file;
-  const imageData = image && image.filename ? image.filename : null;
+  const image = req.files;
+  const imageData = image && image[0].key ? image[0].key : null;
   const result = await pool.query(
     "UPDATE menues SET nombre = $1,precio = $2,stock = $3,categoria=$4,img = COALESCE($5, img) WHERE codplatillo = $6",
     [nombre, precio, stock, categoria, imageData, id]
