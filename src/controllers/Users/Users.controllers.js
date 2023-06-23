@@ -1153,7 +1153,7 @@ const CreateNewVenta = async (req, res) => {
      WHERE codusuario = $1`,
     [userId]
   );
-  req.session.usuarios = userQueryResult.rows[0];
+  req.session.usuarios = await userQueryResult.rows[0];
   usuario = req.session.usuarios;
   res.redirect("/user/carroComprado");
 };

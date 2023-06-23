@@ -57,13 +57,13 @@ router.get("/generate/:id", TocheckerGenerate);
 router.get("/generate1/:id", TocheckerGenerate1);
 router.post("/generate", postcheckerGenerate);
 router.post("/user/ActualizarPedido/:codventa", CookerUpdate);
-router.post("/user/ActualizarPedidoMesas/:codventa",CookerUpdateMesas)
+router.post("/user/ActualizarPedidoMesas/:codventa", CookerUpdateMesas);
 router.get("/waiterPlatillo", TowaiterPlatillo);
 router.get("/checkermesas", checkermesas);
 router.post("/actualizarPedido", postcheckermesas);
 router.post("/actualizarPedidoWeb", postcheckerweb);
-router.post("/borrarPedido", deleteCheckerMesas)
-//Ventas por mesa: 
+router.post("/borrarPedido", deleteCheckerMesas);
+//Ventas por mesa:
 router.post("/user/WaiterVentas1", postWaiter1);
 router.get("/user/CheckerVentasPresencial", checkerPresencial);
 router.post("/pedidoLlevar", postcheckerLlevar);
@@ -73,16 +73,16 @@ router.post("/ventaLlevar", postcheckerGenerateLlevar);
 
 //falta el checkAuthenticated///
 router.get("/resumenVentas", getResumen);
-router.get("/VentasLlevar", getCheckerLlevar)
+router.get("/VentasLlevar", getCheckerLlevar);
 router.get("/user/Checker", getCheker);
 router.get("/user/login", checkAuthenticated, Tologin);
 router.get("/user/logout", Tologout);
 router.get("/user/gracias", thanks);
-router.get("/user/carroComprado", NewCar);//
-router.post("/user/carroComprado", BuyCar)
-router.get("/user/carrito", ToCart);//
+router.get("/user/carroComprado", NewCar); //
+router.post("/user/carroComprado", BuyCar);
+router.get("/user/carrito", ToCart); //
 router.get("/user/CheckerVentas", Tochecker);
-router.get("/user/Waiter", getWaiter)
+router.get("/user/Waiter", getWaiter);
 router.get("/user/WaiterVentas", Towaiter);
 router.get("/user/Chef", Cooker);
 router.get("/user/index", checkNotAuthenticated, Tohome);

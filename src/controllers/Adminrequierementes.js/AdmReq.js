@@ -2,6 +2,8 @@ const { pool } = require("../../db/postgresdb");
 const bcryptjs = require("bcryptjs");
 const { json, response } = require("express");
 const Swal = require("sweetalert2");
+const puppeteer = require("puppeteer");
+const axios = require("axios");
 //CONTROLADORES CRUD
 const deleteuser = async (req, res) => {
   try {
@@ -671,7 +673,8 @@ const getmenubyid = async (req, res) => {
 const patchmenubyid = async (req, res) => {
   const { id, nombre, precio, stock, categoria } = req.body;
   const image = req.files;
-  const imageData = image && image[0].key ? image[0].key : null;
+  const imageData =
+    image && image.length > 0 && image[0].key ? image[0].key : null;
   const result = await pool.query(
     "UPDATE menues SET nombre = $1,precio = $2,stock = $3,categoria=$4,img = COALESCE($5, img) WHERE codplatillo = $6",
     [nombre, precio, stock, categoria, imageData, id]
@@ -703,6 +706,25 @@ const quitarpubliMenu = async (req, res) => {
   res.redirect("/menues");
 };
 //COTROLADOR PARA REPORTES-GRAFICOS
+const getprove4rep = async (req, res) => {
+  const result = await pool.query(`SELECT * FROM proveedores WHERE estado='1'`);
+  res.json(result.rows);
+};
+const getVentas = async (req, res) => {
+  const result =
+    await pool.query(`SELECT menues.nombre, detalle_ventas.cantidad,menues.precio,detalle_ventas.subtotal,ventas.tipoventa,ventas.fecha_registro
+    FROM detalle_ventas
+    JOIN menues ON detalle_ventas.codplatillo = menues.codplatillo
+    JOIN ventas ON detalle_ventas.codventa = ventas.codventa
+    ORDER BY detalle_ventas.codventa`);
+  res.json(result.rows);
+};
+const getCompras4rep = async (req, res) => {
+  const result =
+    await pool.query(`SELECT detalle_compras.idcompra,compras.numerodocumento,productos.codigo_producto, productos.nombre , detalle_compras.cantidad, detalle_compras.precio , detalle_compras.total, compras.tipodocumento,compras.tipo_pago,compras.fecha_compra from detalle_compras 
+    INNER JOIN  compras ON   detalle_compras.idcompra = compras.idcompra  INNER JOIN productos ON detalle_compras.idproducto = productos.idproducto`);
+  res.json(result.rows);
+};
 
 module.exports = {
   getMarcas,
@@ -755,4 +777,7 @@ module.exports = {
   getPagos,
   updatepagos,
   getAllpagos,
+  getprove4rep,
+  getVentas,
+  getCompras4rep,
 };

@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const { s3, getImageStream } = require("../services/awts3.js");
+const puppeteer = require("puppeteer");
+const { pool } = require("../db/postgresdb.js");
+const axios = require("axios");
 
 const AdmReq = require("../controllers/Adminrequierementes.js/AdmReq.js");
 //RUTA PARA AMAZON
@@ -75,7 +78,18 @@ router.get("/publicarmenu/:id", AdmReq.publicarMenu);
 router.get("/quitarpublimenu/:id", AdmReq.quitarpubliMenu);
 //RUTAS PARA LOS REPORTES-GRAFICOS
 router.get("/dashboard", (req, res) => {
-  res.render("reportes");
+  res.render("Dashboard");
 });
-
+router.get("/prove4rep", AdmReq.getprove4rep);
+router.get("/ventas4rep", AdmReq.getVentas);
+router.get("/compras4rep", AdmReq.getCompras4rep);
+router.get("/ReporteProveedores", (req, res) => {
+  res.render("ReporteProveedor");
+});
+router.get("/ReporteVentas", (req, res) => {
+  res.render("ReporteVentas");
+});
+router.get("/ReporteCompras", (req, res) => {
+  res.render("ReporteCompras");
+});
 module.exports = router;
