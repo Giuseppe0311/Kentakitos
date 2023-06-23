@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { s3, getImageStream } = require("../services/awts3.js");
-const puppeteer = require("puppeteer");
 const { pool } = require("../db/postgresdb.js");
 const axios = require("axios");
 

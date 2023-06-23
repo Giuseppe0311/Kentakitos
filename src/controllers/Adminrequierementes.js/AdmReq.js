@@ -2,7 +2,6 @@ const { pool } = require("../../db/postgresdb");
 const bcryptjs = require("bcryptjs");
 const { json, response } = require("express");
 const Swal = require("sweetalert2");
-const puppeteer = require("puppeteer");
 const axios = require("axios");
 //CONTROLADORES CRUD
 const deleteuser = async (req, res) => {
