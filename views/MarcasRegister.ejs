@@ -24,7 +24,14 @@
           >
             <span class="navbar-toggler-icon"></span>
           </button>
-          <a class="navbar-brand" href="#">AdminPanel Kentakitos</a>
+          <!-- make a buttom for logout and add styles and icon -->
+        <a class="nav-link active" aria-current="page" href="/user/logout">
+         <button class="btn btn-danger">
+      <i class="fas fa-sign-out-alt"></i> Logout
+         </button>
+        </a>
+
+
 
           <div
             class="offcanvas offcanvas-start"
@@ -45,6 +52,16 @@
             </div>
             <div class="offcanvas-body">
               <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+              <!-- make a buttom for home and add styles and icon  -->
+              <!-- make a buttom for home and add styles and icon -->
+            <li class="nav-item">
+               <a class="nav-link active" aria-current="page" href="/dashboard">
+    <button class="btn btn-primary">
+      <i class="fas fa-home"></i> Home
+    </button>
+  </a>
+</li>
+ 
                 <li class="nav-item dropdown">
                   <a
                     class="nav-link dropdown-toggle"
@@ -116,21 +133,61 @@
                   </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a
-                      class="nav-link dropdown-toggle"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      VENTAS
-                    </a>
-                    <ul class="dropdown-menu">
-                      <li>
-                        <a class="dropdown-item" href="/menues"> Registar Menu</a>
-                      </li>
-                    </ul>
-                  </li>
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    VENTAS
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" href="/menues"> Registar Menu</a>
+                    </li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a
+                    class="nav-link dropdown-toggle"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    REPORTES
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" href="/ReporteProveedores"> Reporte Proveedores</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReporteVentas">Reporte Ventas</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReporteCompras">Reporte Compras</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReportePagos">Reporte Pagos</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReporteMenues">Reporte Menus</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReporteProductos">Reporte Productos</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReporteMarcas">Reporte Marcas</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReporteCategorias">Reporte Categorias</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="/ReporteUsuarios">Reporte Usuarios</a>
+                    </li>
+                  </ul>
+                </li>
               </ul>
             </div>
           </div>

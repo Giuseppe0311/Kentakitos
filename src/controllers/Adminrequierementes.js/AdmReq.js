@@ -724,7 +724,61 @@ const getCompras4rep = async (req, res) => {
     INNER JOIN  compras ON   detalle_compras.idcompra = compras.idcompra  INNER JOIN productos ON detalle_compras.idproducto = productos.idproducto`);
   res.json(result.rows);
 };
-
+const getPagos4rep = async (req, res) => {
+  const result = await pool.query(`
+  SELECT compras.fecha_compra, compras.totalcompra, proveedores.nomcompania, compras.tipodocumento, compras.numerodocumento, compras.tipo_pago, pagos.fecha_pago AS fechapago, pagos.imagen_comprobante AS comprobante
+      FROM compras
+      INNER JOIN pagos ON compras.idcompra = pagos.idcompra
+      INNER JOIN proveedores ON proveedores.codproveedor = compras.codproveedor;
+  `);
+  res.json(result.rows);
+};
+const getMenys4rep = async (req, res) => {
+  const result =
+    await pool.query(`SELECT  codplatillo , precio,nombre,stock,categoria,estado,fecha_registro  FROM menues  ORDER BY codplatillo ASC
+    `);
+  res.json(result.rows);
+};
+const getProd4rep = async (req, res) => {
+  const result =
+    await pool.query(`SELECT productos.idproducto, productos.codigo_producto, productos.nombre as "nombreproducto", categorias_productos.nombre as "catgoriaproductos", marcas_productos.nombre as "marcasproductos", unidad.nombre as "unidadnombre", productos.descripcion, productos.estado,productos.fecha_registro
+  FROM productos
+  INNER JOIN marcas_productos ON productos.codmarca = marcas_productos.codmarca
+  INNER JOIN unidad ON unidad.id_unidad = productos.id_unidad
+  INNER JOIN categorias_productos ON categorias_productos.codcategoria = productos.codcategoria`);
+  res.json(result.rows);
+};
+const getMarcas4rep = async (req, res) => {
+  const result = await pool.query(
+    `SELECT * FROM marcas_productos order by codmarca asc`
+  );
+  res.json(result.rows);
+};
+const getCateg4rep = async (req, res) => {
+  const result = await pool.query(
+    `SELECT * FROM categorias_productos order by codcategoria asc`
+  );
+  res.json(result.rows);
+};
+const getUsuarios4rep = async (req, res) => {
+  const result = await pool.query(`
+  SELECT usuarios.codusuario, usuarios.nombres, usuarios.apellidos, usuarios.correo, usuarios.dni, usuarios.celular, usuarios.direccion, perfiles.nombre AS Perfil ,usuarios.fecha_registro FROM usuarios INNER JOIN perfiles ON usuarios.codperfil = perfiles.codperfil;
+  `);
+  res.json(result.rows);
+};
+const detallemenuesa = async (req, res) => {
+  try {
+    const result =
+      await pool.query(`SELECT menues.nombre, menues.categoria,detalle_ventas.cantidad,menues.precio,detalle_ventas.subtotal,ventas.tipoventa,ventas.fecha_registro
+    FROM detalle_ventas
+    JOIN menues ON detalle_ventas.codplatillo = menues.codplatillo
+    JOIN ventas ON detalle_ventas.codventa = ventas.codventa
+    ORDER BY detalle_ventas.codventa`);
+    res.json(result.rows);
+  } catch (error) {
+    console.log(error);
+  }
+};
 module.exports = {
   getMarcas,
   getmenu,
@@ -779,4 +833,11 @@ module.exports = {
   getprove4rep,
   getVentas,
   getCompras4rep,
+  getPagos4rep,
+  getMenys4rep,
+  getProd4rep,
+  getMarcas4rep,
+  getCateg4rep,
+  getUsuarios4rep,
+  detallemenuesa,
 };

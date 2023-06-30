@@ -963,8 +963,9 @@ const CookerUpdateMesas = async (req, res) => {
 
 const Tohome = (req, res) => {
   console.log(req.isAuthenticated());
+  console.log(req.user.codperfil);
   if (req.user.codperfil == "1") {
-    res.redirect("/user/adminPanel/Dashboard");
+    res.redirect("/dashboard");
   } else if (req.user.codperfil == "2") {
     res.redirect("/user/Checker");
   } else if (req.user.codperfil == "3") {
@@ -972,9 +973,6 @@ const Tohome = (req, res) => {
   } else if (req.user.codperfil == "4") {
     res.redirect("/user/Waiter");
   } else {
-    console.log(
-      "esta es la respuesta que deberia dar la sesion : " + req.session.hola
-    );
     const usuarioEstaLogueado = req.isAuthenticated();
     res.render("index", { user: req.user.correo, usuarioEstaLogueado });
   }
@@ -1351,6 +1349,13 @@ const checkNotAuthenticated = function checkNotAuthenticated(req, res, next) {
     res.render("index", { usuarioEstaLogueado });
   }
 };
+const antheitcadted = (req, res, next) => {
+  if (req.isAuthenticated() && req.user.codperfil == "1") {
+    return next();
+  }
+  res.redirect("/user/login");
+};
+
 //export modules
 module.exports = {
   getResumen,
@@ -1394,4 +1399,5 @@ module.exports = {
   checkerPresencial,
   checkAuthenticated,
   checkNotAuthenticated,
+  antheitcadted,
 };
