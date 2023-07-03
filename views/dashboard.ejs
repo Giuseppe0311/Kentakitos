@@ -244,10 +244,12 @@
         let categorias = [];
         let repeticionesCategorias = [];
         let repeticiones = {};
+        const ventasPorFecha = {};
         try {
           const response = await axios.get("/detallMenus")
           const detalleMenus = response.data
           detalleMenus.forEach((menus) => {
+            const fechaVenta = menus.fecha_registro.slice(0, 10);
     const { nombre } = menus;
     const { categoria } = menus;
     repeticiones[nombre] = repeticiones[nombre] ? repeticiones[nombre] + 1 : 1;
@@ -258,15 +260,23 @@
       const index = categorias.indexOf(categoria);
       repeticionesCategorias[index]++;
     }
+    if (!ventasPorFecha[fechaVenta]) {
+    ventasPorFecha[fechaVenta] = 1;
+  } else {
+    ventasPorFecha[fechaVenta] += 1;
+  }
   });
   // Obtener el array de nombres únicos de productos
   const nombresUnicos = Object.keys(repeticiones);
   
   // Obtener el array de repeticiones correspondientes
   const repeticionesArray = Object.values(repeticiones);
+  const fechas = Object.keys(ventasPorFecha);
+const cantidadesVentas = Object.values(ventasPorFecha);
+
+console.log(fechas);
+console.log(cantidadesVentas);
   
-  console.log(categorias);
-  console.log(repeticionesCategorias);
     var myChart = new Chart(document.getElementById("myChart"), {
     type: "doughnut",
     data: {
@@ -308,10 +318,13 @@
   var myChart1 = new Chart(document.getElementById("myChart3"), {
     type: "line",
     data: {
-      labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio"],
+      labels: fechas,
       datasets: [{
-        label: "Pagos",
-        data: [10, 20, 30, 40, 50, 200],
+        label: "Ventas",
+        data: cantidadesVentas,
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
         fill: false,
         barPercentage: 0.6
       }]

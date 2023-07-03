@@ -183,22 +183,22 @@ const Towaiter = async (req, res) => {
   const mesa6QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '7';`
+    WHERE codmesa = '6';`
   );
   const mesa7QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '8';`
+    WHERE codmesa = '7';`
   );
   const mesa8QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '9';`
+    WHERE codmesa = '8';`
   );
   const mesa9QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = '10';`
+    WHERE codmesa = '9';`
   );
   let buttonestado1 = mesa1QueryResult.rows[0].estado;
   let buttonestado2 = mesa2QueryResult.rows[0].estado;
@@ -266,22 +266,22 @@ const checkerPresencial = async (req, res) => {
   const mesa6QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 7;`
+    WHERE codmesa = 6;`
   );
   const mesa7QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 8;`
+    WHERE codmesa = 7;`
   );
   const mesa8QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 9;`
+    WHERE codmesa = 8;`
   );
   const mesa9QueryResult = await pool.query(
     `select estado
     FROM mesas
-    WHERE codmesa = 10;`
+    WHERE codmesa = 9;`
   );
   let buttonestado1 = mesa1QueryResult.rows[0].estado;
   let buttonestado2 = mesa2QueryResult.rows[0].estado;
@@ -319,6 +319,7 @@ const checkerPresencial = async (req, res) => {
 const postWaiter1 = async (req, res) => {
   const estadoBoton = req.body.estadoBoton;
   const formValues = req.body.formValues;
+  console.log(estadoBoton, formValues, "con fe");
   let codmesa;
   let tipoventa;
   if (estadoBoton === "0" || formValues === "1") {
@@ -337,16 +338,16 @@ const postWaiter1 = async (req, res) => {
     codmesa = 5;
     tipoventa = "mesa_5";
   } else if (estadoBoton === "10" || formValues === "11") {
-    codmesa = 7;
+    codmesa = 6;
     tipoventa = "mesa_6";
   } else if (estadoBoton === "12" || formValues === "13") {
-    codmesa = 8;
+    codmesa = 7;
     tipoventa = "mesa_7";
   } else if (estadoBoton === "14" || formValues === "15") {
-    codmesa = 9;
+    codmesa = 8;
     tipoventa = "mesa_8";
   } else if (estadoBoton === "16" || formValues === "17") {
-    codmesa = 10;
+    codmesa = 9;
     tipoventa = "mesa_9";
   }
   console.log(formValues, "uwu", codmesa);
@@ -360,7 +361,7 @@ const postWaiter1 = async (req, res) => {
       console.log(codplatillo, cantidades, precios);
       let total = 0;
       let codventa;
-      pool.query("BEGIN");
+      await pool.query("BEGIN");
       const ventaInsertResult = await pool.query(
         `INSERT INTO ventas (tipoventa, estado) VALUES ($1, $2) RETURNING codventa`,
         [tipoventa, "2"]
@@ -386,6 +387,7 @@ const postWaiter1 = async (req, res) => {
         `UPDATE ventas SET preciototal = $1 WHERE codventa = $2`,
         [total, codventa]
       );
+      console.log(formValues, "guissipeEstadoBTN");
       await pool.query(
         `UPDATE mesas
         SET estado = $1
@@ -402,6 +404,7 @@ const postWaiter1 = async (req, res) => {
     }
   }
   if (formValues !== undefined && formValues !== "") {
+    console.log(formValues, "guissipeFormValues");
     await pool.query(
       `UPDATE mesas
       SET estado = $1

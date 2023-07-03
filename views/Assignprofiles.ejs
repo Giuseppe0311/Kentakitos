@@ -206,7 +206,6 @@
                   <div class="position-static">
                     <thead class="table-dark">
                       <tr>
-                        <th>Codusuario</th>
                         <th>Nombres</th>
                         <th>Apellidos</th>
                         <th>Correo</th>
@@ -222,7 +221,6 @@
                     <!-- //make a ejs for each -->
                     <% usuarios.forEach(function(elemento) { %>
                         <tr>
-                          <td><%=elemento.codusuario%></td>
                           <td><%=elemento.nombres%></td>
                           <td><%=elemento.apellidos%></td>
                           <td><%=elemento.correo%></td>
@@ -296,7 +294,7 @@
   </div>
   <div class="form-group">
     <label for="apellidos">Apellidos</label>
-    <input type="text" class="form-control" id="apellidos" name="apellidos" value ="${datosCliente.apellidos}"required>
+    <input type="text" class="form-control" id="apellidos" name="apellidos" value ="${datosCliente.apellidos}" readonly required>
   </div>
   <div class="form-group">
     <label for="telefono">Telefono</label>

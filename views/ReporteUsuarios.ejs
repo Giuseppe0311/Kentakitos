@@ -223,7 +223,6 @@
               <table class="table caption-top table-light table-striped" id="mitabla">
                 <thead class="table-dark">
                   <tr>
-                    <th>Cod Usuario </th>
                     <th>Nombres</th>
                     <th>Apellidos</th>
                     <th>Correo</th>
@@ -275,7 +274,6 @@
         dataproveedores.forEach((proveedor) => {
           const fila = document.createElement("tr");
           fila.innerHTML = `
-            <td>${proveedor.codusuario}</td>
             <td>${proveedor.nombres}</td>
             <td>${proveedor.apellidos}</td>
             <td>${proveedor.correo}</td>
@@ -336,7 +334,6 @@
             // Agregar las filas filtradas a la tabla
             filteredData.forEach(proveedor => {
               table.row.add([
-                proveedor.codusuario,
                 proveedor.nombres,
                 proveedor.apellidos,
                 proveedor.correo,
@@ -360,7 +357,6 @@
             // Agregar las filas originales a la tabla
             originalData.forEach(proveedor => {
               table.row.add([
-              proveedor.codusuario,
                 proveedor.nombres,
                 proveedor.apellidos,
                 proveedor.correo,
