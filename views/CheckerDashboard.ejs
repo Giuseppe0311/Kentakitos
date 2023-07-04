@@ -55,12 +55,7 @@
           </ul>
         </li>
         
-        <li class="list__item">
-          <div class="list__button">
-            <img src="/images/message.svg" class="list__img">
-            <a href="/resumenVentas" class="nav__link">Resumen Ventas</a>
-          </div>
-        </li>
+        
       </ul> 
     </nav>
     <div class="table-container">
@@ -452,7 +447,7 @@
             Swal.fire('Modificado!', '', 'success');
             setTimeout(function () {
               location.reload();
-            }, 1000);
+            }, 1500);
             const response = await axios.post('/borrarPedido', {
               platillo,
               codventa,
