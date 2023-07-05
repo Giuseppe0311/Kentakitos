@@ -350,7 +350,9 @@ const postCompras = async (req, res) => {
       proveedor,
       estadopago,
     } = req.body;
-    const image = req.file;
+    const image = req.files;
+    const imageData =
+      image && image.length > 0 && image[0].key ? image[0].key : null;
     const newCompra = await pool.query(
       "INSERT INTO public.compras(fecha_compra, totalcompra, estado_compra, codproveedor, tipodocumento, numerodocumento, tipo_pago, img,estadopago) VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9) RETURNING *;",
       [
@@ -361,7 +363,7 @@ const postCompras = async (req, res) => {
         tipodoc,
         numerodoc,
         typeofpay,
-        image.filename,
+        imageData,
         estadopago,
       ]
     );
@@ -387,8 +389,9 @@ const patchcompras = async (req, res) => {
   } else {
     estadopago = "Deuda";
   }
-  const image = req.file;
-  const imageData = image && image.filename ? image.filename : null;
+  const image = req.files;
+  const imageData =
+    image && image.length > 0 && image[0].key ? image[0].key : null;
   const result = await pool.query(
     "UPDATE compras SET fecha_compra = $1,totalcompra = $2,codproveedor = $3,tipodocumento=$4,numerodocumento=$5,tipo_pago=$6,img = COALESCE($7, img),estadopago=$8 WHERE idcompra = $9",
     [
@@ -512,10 +515,12 @@ const postPagos = async (req, res) => {
   try {
     const { id } = req.params;
     const { fecha } = req.body;
-    const image = req.file;
+    const image = req.files;
+    const imageData =
+      image && image.length > 0 && image[0].key ? image[0].key : null;
     const newPago = await pool.query(
       "INSERT INTO pagos(idcompra,fecha_pago,imagen_comprobante) VALUES ($1,$2,$3) RETURNING *",
-      [id, fecha, image.filename]
+      [id, fecha, imageData]
     );
     const updatepago = await pool.query(
       "UPDATE COMPRAS SET estadopago=$1 WHERE idcompra=$2",
@@ -529,8 +534,9 @@ const postPagos = async (req, res) => {
 const updatepagos = async (req, res) => {
   try {
     const { fecha, id } = req.body;
-    const image = req.file;
-    const imageData = image && image.filename ? image.filename : null;
+    const image = req.files;
+    const imageData =
+      image && image.length > 0 && image[0].key ? image[0].key : null;
     const response = await pool.query(
       "UPDATE pagos SET  fecha_pago = $1,imagen_comprobante = COALESCE($2, imagen_comprobante) WHERE idpago = $3",
       [fecha, imageData, id]

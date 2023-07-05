@@ -905,10 +905,10 @@ const Cooker = async (req, res) => {
   let pedido_mesas = null;
   const checkerQueryResult = await pool.query(
     `SELECT pedido_mesas.codventa,pedido_mesas.codmesa, pedido_mesas.platillo, pedido_mesas.cantidad, pedido_mesas.estado,pedido_mesas.fecha_hora,
-    pedido_mesas.estadonuevo
+    pedido_mesas.estadonuevo,pedido_mesas.precio
       FROM pedido_mesas
       WHERE pedido_mesas.estado = '1' or pedido_mesas.estado='3'
-      Group by pedido_mesas.codventa,pedido_mesas.codmesa, pedido_mesas.platillo, pedido_mesas.cantidad, pedido_mesas.estado,pedido_mesas.fecha_hora,pedido_mesas.estadonuevo
+      Group by pedido_mesas.codventa,pedido_mesas.codmesa, pedido_mesas.platillo, pedido_mesas.cantidad, pedido_mesas.estado,pedido_mesas.fecha_hora,pedido_mesas.estadonuevo,pedido_mesas.precio
       ORDER BY pedido_mesas.codventa
     `
   );
