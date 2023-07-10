@@ -6,6 +6,7 @@ const axios = require("axios");
 
 const AdmReq = require("../controllers/Adminrequierementes.js/AdmReq.js");
 const { antheitcadted } = require("../controllers/Users/Users.controllers.js");
+const { authenticate } = require("passport");
 //RUTA PARA AMAZON
 router.get("/subida/:imageKey", async (req, res) => {
   const imageKey = req.params.imageKey;
@@ -28,6 +29,8 @@ router.get("/user/admin/permission", antheitcadted, AdmReq.getAssingnPermisos);
 router.get("/marcas", antheitcadted, AdmReq.getMarcas);
 router.get("/marcas/:id", AdmReq.getMarcasbyId);
 router.post("/marcas", antheitcadted, AdmReq.postMarcas);
+router.post("/marca", antheitcadted, AdmReq.UpdateMarcas);
+router.get("/delmarca/:id", antheitcadted, AdmReq.DeleteMarcas);
 //RUTAS PARA PRODUCTOS
 router.get("/productos", antheitcadted, AdmReq.getProducto);
 router.get("/productos/:id", AdmReq.getProductobyID);

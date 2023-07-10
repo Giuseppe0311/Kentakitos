@@ -398,6 +398,16 @@
       )
     </script>
   <% } %>
+  <% if (dniExiste==true) { %>
+    <script>
+      Swal.fire(
+        'DNI EXISTE',
+        'EL DNI YA SE ENCUENTRA REGISTRARO',
+        'info'
+      )
+    </script>
+  <% } %>
+
   <% if (error==true) { %>
     <script>
       Swal.fire(

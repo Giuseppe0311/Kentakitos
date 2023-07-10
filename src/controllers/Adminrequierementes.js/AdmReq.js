@@ -68,11 +68,13 @@ const getUserRegister = async (req, res) => {
   let valor2 = req.flash("exist")[0];
   let valor3 = req.flash("sucess")[0];
   let valor4 = req.flash("error")[0];
+  let valor5 = req.flash("dniExiste")[0];
   res.render("AdminRegister", {
     perfiles: perfiles.rows,
     exist: valor2,
     sucess: valor3,
     error: valor4,
+    dniExiste: valor5,
     emailExists: valor,
   });
 };
@@ -98,6 +100,15 @@ const postUserRegister = async (req, res) => {
   }
   if (contraseña1.length < 6) {
     req.flash("exist", true);
+    return res.redirect("/user/admin/register");
+  }
+  const dniQuery = await pool.query(`SELECT * FROM usuarios WHERE dni = $1`, [
+    dni,
+  ]);
+
+  console.log(dniQuery.rows);
+  if (dniQuery.rows.length > 0) {
+    req.flash("dniExiste", true);
     return res.redirect("/user/admin/register");
   }
   try {
@@ -139,7 +150,9 @@ const getAssingnPermisos = async (req, res) => {
 //CONTROLADORES PARA  MARCAS
 const getMarcas = async (req, res) => {
   try {
-    const marcas = await pool.query("SELECT * FROM marcas_productos");
+    const marcas = await pool.query(
+      "SELECT * FROM marcas_productos where estado='1'"
+    );
     res.render("MarcasRegister", { marcas: marcas.rows });
   } catch (err) {
     console.error(err.message);
@@ -256,6 +269,30 @@ const getMarcas4Products = async (req, res) => {
     res.json(response.rows);
   } catch (error) {
     res.render(error);
+  }
+};
+const DeleteMarcas = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await pool.query(
+      "UPDATE marcas_productos SET estado=0 WHERE codmarca=$1",
+      [id]
+    );
+    res.redirect("/marcas");
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+const UpdateMarcas = async (req, res) => {
+  try {
+    const { id, nombre } = req.body;
+    const response = await pool.query(
+      "UPDATE marcas_productos SET nombre=$1 WHERE codmarca=$2",
+      [nombre, id]
+    );
+    res.json(response.rows[0]);
+  } catch (error) {
+    console.error(error.message);
   }
 };
 //////////////////////////************///////////////// */
@@ -846,4 +883,6 @@ module.exports = {
   getCateg4rep,
   getUsuarios4rep,
   detallemenuesa,
+  DeleteMarcas,
+  UpdateMarcas,
 };
